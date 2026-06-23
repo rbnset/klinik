@@ -34,7 +34,7 @@ class ObatForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                    ])->columns(3), // Dibuat sejajar 3 kolom agar layar lebar dimanfaatkan maksimal
+                    ])->columns(1), // Dibuat sejajar 3 kolom agar layar lebar dimanfaatkan maksimal
 
                 Section::make('Persediaan & Harga')
                     ->schema([
@@ -57,7 +57,7 @@ class ObatForm
                             ->prefix('Rp') // Menambahkan teks Rp di dalam input
                             ->required()
                             ->minValue(0),
-                    ])->columns(3),
+                    ])->columns(1),
             ]);
     }
 }

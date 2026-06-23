@@ -28,9 +28,31 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // 1. NAMA APLIKASI
+            ->brandName('Klinik Bidan Delima')
+
+            // 2. LOGO & FAVICON
+            ->brandLogo(asset('images/logo.jpeg')) // Memanggil logo dari folder public/images
+            ->brandLogoHeight('3rem') // Mengatur ukuran tinggi logo agar proporsional di navbar
+            ->favicon(asset('images/logo.jpeg')) // Ikon kecil di tab browser
+
+            // 3. TIPOGRAFI MODERN
+            ->font('Poppins') // Mengganti font bawaan agar terlihat lebih elegan dan ramah
+
+            // 4. WARNA TEMA (Menyesuaikan warna merah logo)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#DF2228'), // Merah khas Bidan Delima
+                'gray' => Color::Zinc,
+                'info' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
+                'danger' => Color::Rose,
             ])
+
+
+            // ->colors([
+            //     'primary' => Color::Amber,
+            // ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
             ->pages([
@@ -38,8 +60,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\Filament\Admin\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // AccountWidget::class,
+                // FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
