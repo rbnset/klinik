@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('obats', function (Blueprint $table) {
+        Schema::create('obat', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_kategori_obat')->constrained('kategori_obat')->restrictOnDelete();
+            $table->string('kode_obat', 50)->unique()->index(); // Wajib di-index karena sering dicari barcode
+            $table->string('nama_obat', 150)->index();
+            $table->string('satuan', 50);
+            $table->unsignedSmallInteger('stok')->default(0);
+            $table->unsignedInteger('harga_beli');
             $table->timestamps();
         });
     }
