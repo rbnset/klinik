@@ -16,4 +16,9 @@ class ViewKategoriObat extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function getView(): string
+    {
+        return 'admin.kategori-obat.show';
+    }
 }

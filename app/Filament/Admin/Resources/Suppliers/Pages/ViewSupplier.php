@@ -16,4 +16,9 @@ class ViewSupplier extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function getView(): string
+    {
+        return 'admin.suppliers.show';
+    }
 }
