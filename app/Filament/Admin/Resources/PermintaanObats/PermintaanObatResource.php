@@ -79,15 +79,44 @@ class PermintaanObatResource extends Resource
     {
         $user = auth()->user();
 
-        if (
-            $user->role === 'admin'
-            || $user->role === 'karyawan'
-        ) {
+        if ($user->role === 'admin') {
             return true;
         }
 
-        return
-            $record->id_pengguna === $user->id
-            && $record->status === 'pending';
+        return $record->status === 'pending'
+            && (
+                $user->role === 'karyawan'
+                || (
+                    $user->role === 'bidan'
+                    && $record->id_pengguna === $user->id
+                )
+            );
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return null;
+        }
+
+        // Bidan
+        if ($user->role === 'bidan') {
+
+            $count = PermintaanObat::query()
+                ->where('id_pengguna', $user->id)
+                ->where('status', 'pending')
+                ->count();
+
+            return $count ?: null;
+        }
+
+        // Karyawan/Admin/Pemilik
+        $count = PermintaanObat::query()
+            ->where('status', 'pending')
+            ->count();
+
+        return $count ?: null;
     }
 }

@@ -65,16 +65,20 @@ class PermintaanObatsTable
 
                         $user = auth()->user();
 
-                        if (
-                            $user->role === 'admin'
-                            || $user->role === 'karyawan'
-                        ) {
-                            return true;
+                        // Karyawan hanya boleh edit permintaan pending
+                        if ($user->role === 'karyawan') {
+                            return $record->status === 'pending';
                         }
 
-                        return
-                            $record->id_pengguna === $user->id
-                            && $record->status === 'pending';
+                        // Bidan hanya boleh edit miliknya sendiri dan pending
+                        if ($user->role === 'bidan') {
+                            return
+                                $record->id_pengguna === $user->id
+                                && $record->status === 'pending';
+                        }
+
+                        // Admin/Pemilik bebas melihat tombol edit
+                        return true;
                     })
             ])
             ->toolbarActions([]);
