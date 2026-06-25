@@ -24,6 +24,7 @@ class PermintaanObatInfolist
                                 'pending' => 'warning',
                                 'disetujui' => 'success',
                                 'ditolak' => 'danger',
+                                'dibatalkan' => 'gray',
                             }),
                         TextEntry::make('keterangan')->label('Catatan')->columnSpanFull(),
                     ])->columns(4),

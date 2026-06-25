@@ -65,13 +65,17 @@ class PermintaanObatsTable
 
                         $user = auth()->user();
 
-                        if ($user->role === 'karyawan') {
+                        if (
+                            $user->role === 'admin'
+                            || $user->role === 'karyawan'
+                        ) {
                             return true;
                         }
 
-                        return $record->id_pengguna === $user->id
+                        return
+                            $record->id_pengguna === $user->id
                             && $record->status === 'pending';
-                    }),
+                    })
             ])
             ->toolbarActions([]);
     }

@@ -79,14 +79,15 @@ class PermintaanObatResource extends Resource
     {
         $user = auth()->user();
 
-        // Karyawan boleh edit semua
-        if ($user->role === 'karyawan') {
+        if (
+            $user->role === 'admin'
+            || $user->role === 'karyawan'
+        ) {
             return true;
         }
 
-        // Bidan hanya boleh edit miliknya sendiri
-        // dan hanya ketika masih pending
-        return $record->id_pengguna === $user->id
+        return
+            $record->id_pengguna === $user->id
             && $record->status === 'pending';
     }
 }

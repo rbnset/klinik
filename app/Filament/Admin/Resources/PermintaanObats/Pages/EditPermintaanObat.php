@@ -30,6 +30,11 @@ class EditPermintaanObat extends EditRecord
                 ->requiresConfirmation()
                 ->action(function () {
 
+                    // simpan perubahan form terlebih dahulu
+                    $this->save();
+
+                    $this->record->refresh();
+
                     foreach ($this->record->detail_permintaan as $detail) {
 
                         // wajib diisi
@@ -76,15 +81,76 @@ class EditPermintaanObat extends EditRecord
                         }
                     }
 
+                    $this->record->update([
+                        'status' => 'disetujui',
+                    ]);
+
+                    $this->record->refresh();
+
                     Notification::make()
-                        ->title('Validasi berhasil')
+                        ->title('Permintaan berhasil disetujui')
                         ->success()
                         ->send();
+
+                    $this->redirect(
+                        PermintaanObatResource::getUrl('view', [
+                            'record' => $this->record,
+                        ])
+                    );
                 }),
 
             ViewAction::make(),
-            DeleteAction::make(),
+            Action::make('batalkan')
+                ->label('Batalkan Permintaan')
+                ->icon('heroicon-o-x-circle')
+                ->color('danger')
+
+                ->visible(
+                    fn() =>
+                    auth()->user()->role === 'bidan'
+                        && $this->record->status === 'pending'
+                        && $this->record->id_pengguna === auth()->id()
+                )
+
+                ->requiresConfirmation()
+
+                ->action(function () {
+
+                    $this->record->update([
+                        'status' => 'dibatalkan',
+                    ]);
+
+                    Notification::make()
+                        ->title('Permintaan berhasil dibatalkan')
+                        ->success()
+                        ->send();
+
+                    $this->redirect(
+                        PermintaanObatResource::getUrl()
+                    );
+                }),
         ];
+    }
+
+    protected function getFormActions(): array
+    {
+        if (auth()->user()->role === 'karyawan') {
+            return [];
+        }
+
+        return parent::getFormActions();
+    }
+
+    public function mount(int|string $record): void
+    {
+        parent::mount($record);
+
+        if (
+            $this->record->status !== 'pending'
+            && auth()->user()->role === 'karyawan'
+        ) {
+            abort(403);
+        }
     }
 
     protected function afterSave(): void
