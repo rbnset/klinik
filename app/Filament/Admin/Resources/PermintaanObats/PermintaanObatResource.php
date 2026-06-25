@@ -14,6 +14,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PermintaanObatResource extends Resource
 {
@@ -25,22 +26,45 @@ class PermintaanObatResource extends Resource
     protected static ?string $modelLabel = 'Permintaan Obat';
     protected static ?string $pluralModelLabel = 'Permintaan Internal';
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $user = auth()->user();
+
+        if (!$user) {
+            return $query;
+        }
+
+        // Admin dan Karyawan melihat semua data
+        if (in_array($user->role, ['admin', 'karyawan'])) {
+            return $query;
+        }
+
+        // Role lainnya hanya melihat miliknya sendiri
+        return $query->where('id_pengguna', $user->id);
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PermintaanObatForm::configure($schema);
     }
+
     public static function infolist(Schema $schema): Schema
     {
         return PermintaanObatInfolist::configure($schema);
     }
+
     public static function table(Table $table): Table
     {
         return PermintaanObatsTable::configure($table);
     }
+
     public static function getRelations(): array
     {
         return [];
     }
+
     public static function getPages(): array
     {
         return [
@@ -49,5 +73,20 @@ class PermintaanObatResource extends Resource
             'view' => ViewPermintaanObat::route('/{record}'),
             'edit' => EditPermintaanObat::route('/{record}/edit'),
         ];
+    }
+
+    public static function canEdit($record): bool
+    {
+        $user = auth()->user();
+
+        // Karyawan boleh edit semua
+        if ($user->role === 'karyawan') {
+            return true;
+        }
+
+        // Bidan hanya boleh edit miliknya sendiri
+        // dan hanya ketika masih pending
+        return $record->id_pengguna === $user->id
+            && $record->status === 'pending';
     }
 }

@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->databaseNotifications()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             // 1. NAMA APLIKASI
