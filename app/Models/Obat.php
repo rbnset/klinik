@@ -8,6 +8,25 @@ class Obat extends Model
 {
     protected $table = 'obat';
     protected $guarded = ['id'];
+
+    public function getTotalPendingAttribute(): int
+    {
+        return \App\Models\DetailPermintaanObat::query()
+            ->whereHas('permintaan_obat', function ($query) {
+                $query->where('status', 'pending');
+            })
+            ->where('id_obat', $this->id)
+            ->sum('jumlah_diminta');
+    }
+
+    public function getStokTersediaAttribute(): int
+    {
+        return max(
+            0,
+            $this->stok - $this->total_pending
+        );
+    }
+
     public function kategori_obat()
     {
         return $this->belongsTo(KategoriObat::class, 'id_kategori_obat');

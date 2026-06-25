@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class PermintaanObatForm
@@ -158,14 +159,49 @@ class PermintaanObatForm
                         Repeater::make('detail_permintaan')
                             ->relationship()
                             ->schema([
+                                // Select::make('id_obat')
+                                //     ->relationship('obat', 'nama_obat')
+                                //     ->label('Pilih Obat')
+                                //     ->searchable()
+                                //     ->preload()           // ← tampilkan opsi awal tanpa mengetik
+                                //     ->disableOptionsWhenSelectedInSiblingRepeaterItems() // ← tambah ini
+                                //     ->required()
+                                //     ->columnSpan(2),
+
                                 Select::make('id_obat')
-                                    ->relationship('obat', 'nama_obat')
                                     ->label('Pilih Obat')
                                     ->searchable()
-                                    ->preload()           // ← tampilkan opsi awal tanpa mengetik
-                                    ->disableOptionsWhenSelectedInSiblingRepeaterItems() // ← tambah ini
-                                    ->required()
-                                    ->columnSpan(2),
+                                    ->preload()
+                                    ->options(
+                                        \App\Models\Obat::all()
+                                            ->mapWithKeys(function ($obat) {
+
+                                                $label =
+                                                    $obat->nama_obat .
+                                                    " | Stok: {$obat->stok}" .
+                                                    " | Pending: {$obat->total_pending}" .
+                                                    " | Tersedia: {$obat->stok_tersedia}";
+
+                                                return [
+                                                    $obat->id => $label,
+                                                ];
+                                            })
+                                    )
+                                    ->disableOptionWhen(function ($value) {
+
+                                        $obat = \App\Models\Obat::find($value);
+
+                                        return $obat && $obat->stok_tersedia <= 0;
+                                    })
+                                    ->required(),
+
+                                // TextInput::make('jumlah_diminta')
+                                //     ->label('Jumlah Diminta')
+                                //     ->numeric()
+                                //     ->minValue(1)
+                                //     ->step(1)
+                                //     ->required()
+                                //     ->columnSpan(1),
 
                                 TextInput::make('jumlah_diminta')
                                     ->label('Jumlah Diminta')
@@ -173,7 +209,36 @@ class PermintaanObatForm
                                     ->minValue(1)
                                     ->step(1)
                                     ->required()
-                                    ->columnSpan(1),
+                                    ->rules([
+                                        function (Get $get) {
+
+                                            return function (
+                                                string $attribute,
+                                                $value,
+                                                \Closure $fail
+                                            ) use ($get) {
+
+                                                $obatId = $get('id_obat');
+
+                                                if (! $obatId) {
+                                                    return;
+                                                }
+
+                                                $obat = \App\Models\Obat::find($obatId);
+
+                                                if (! $obat) {
+                                                    return;
+                                                }
+
+                                                if ($value > $obat->stok_tersedia) {
+
+                                                    $fail(
+                                                        "Jumlah melebihi stok tersedia ({$obat->stok_tersedia})."
+                                                    );
+                                                }
+                                            };
+                                        },
+                                    ]),
 
                                 TextInput::make('jumlah_disetujui')
                                     ->label('Jumlah Disetujui (Oleh Gudang)')

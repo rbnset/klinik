@@ -72,69 +72,7 @@ class PermintaanObatsTable
                         return $record->id_pengguna === $user->id
                             && $record->status === 'pending';
                     }),
-                DeleteAction::make()
-                    ->visible(function ($record) {
-
-                        $user = auth()->user();
-
-                        if ($user->role === 'karyawan') {
-                            return true;
-                        }
-
-                        return $record->id_pengguna === $user->id
-                            && $record->status === 'pending';
-                    }),
-
-                // Tombol Setujui — hanya muncul untuk karyawan & status pending
-                Action::make('setujui')
-                    ->label('Setujui')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->modalHeading('Setujui Permintaan Obat?')
-                    ->modalDescription('Permintaan akan ditandai sebagai disetujui. Anda dapat mengisi jumlah yang disetujui di halaman edit.')
-                    ->modalSubmitActionLabel('Ya, Setujui')
-                    ->visible(
-                        fn(PermintaanObat $record): bool =>
-                        Auth::user()->role === 'karyawan' &&
-                            $record->status === 'pending'
-                    )
-                    ->action(function (PermintaanObat $record): void {
-                        $record->update(['status' => 'disetujui']);
-
-                        // Notifikasi balik ke pemohon
-                        $record->pengguna?->notify(
-                            new PermintaanObatDiperbarui($record, Auth::user())
-                        );
-                    })
-                    ->successNotificationTitle('Permintaan berhasil disetujui.'),
-
-                // Tombol Tolak — hanya muncul untuk karyawan & status pending
-                Action::make('tolak')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Tolak Permintaan Obat?')
-                    ->modalDescription('Permintaan akan ditandai sebagai ditolak dan pemohon akan diberitahu.')
-                    ->modalSubmitActionLabel('Ya, Tolak')
-                    ->visible(
-                        fn(PermintaanObat $record): bool =>
-                        Auth::user()->role === 'karyawan' &&
-                            $record->status === 'pending'
-                    )
-                    ->action(function (PermintaanObat $record): void {
-                        $record->update(['status' => 'ditolak']);
-
-                        // Notifikasi balik ke pemohon
-                        $record->pengguna?->notify(
-                            new PermintaanObatDiperbarui($record, Auth::user())
-                        );
-                    })
-                    ->successNotificationTitle('Permintaan berhasil ditolak.'),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([DeleteBulkAction::make()]),
-            ]);
+            ->toolbarActions([]);
     }
 }
