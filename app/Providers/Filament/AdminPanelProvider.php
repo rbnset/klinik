@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
+            ->registration()
             // 1. NAMA APLIKASI
             ->brandName('Klinik Bidan Delima')
 
