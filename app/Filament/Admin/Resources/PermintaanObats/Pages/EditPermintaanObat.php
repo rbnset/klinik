@@ -24,7 +24,7 @@ class EditPermintaanObat extends EditRecord
                 ->visible(fn () => auth()->user()->role === 'karyawan' && $this->record->status === 'pending')
                 ->requiresConfirmation()
                 ->modalHeading('Setujui Permintaan?')
-                ->modalDescription('Permintaan akan disetujui dan stok obat langsung berkurang sesuai jumlah yang disetujui.')
+                ->modalDescription(fn () => 'Permintaan akan disetujui dan stok akan langsung berkurang sesuai jumlah yang disetujui. Total ' . $this->record->detail_permintaan->sum('jumlah_disetujui') . ' unit dari ' . $this->record->detail_permintaan->count() . ' item akan diposting ke Riwayat Stok.')
                 ->action(function () {
                     $this->save();
                     app(StokObatService::class)->setujuiPermintaan($this->record);
@@ -38,6 +38,8 @@ class EditPermintaanObat extends EditRecord
                 ->color('danger')
                 ->visible(fn () => auth()->user()->role === 'karyawan' && $this->record->status === 'pending')
                 ->requiresConfirmation()
+                ->modalSubmitActionLabel('Setujui & Kurangi Stok')
+                ->modalCancelActionLabel('Batal')
                 ->action(function () {
                     $this->save();
                     $this->record->update(['status' => 'ditolak']);

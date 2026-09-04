@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\RiwayatStoks\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -53,6 +54,8 @@ class RiwayatStoksTable
             ->defaultSort('created_at', 'desc')
             ->striped()
             // Hanya ada tombol View, tidak ada Edit/Delete untuk menjaga audit log
-            ->recordActions([ViewAction::make()]);
+            ->emptyStateHeading('Belum ada riwayat stok')
+            ->emptyStateDescription('Riwayat tercatat otomatis dari penerimaan, permintaan internal, dan penyesuaian stok.')
+            ->recordActions([ActionGroup::make([ViewAction::make()])->icon('heroicon-m-ellipsis-vertical')]);
     }
 }

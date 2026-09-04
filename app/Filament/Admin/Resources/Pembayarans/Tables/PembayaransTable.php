@@ -3,10 +3,12 @@
 namespace App\Filament\Admin\Resources\Pembayarans\Tables;
 
 use App\Models\Pembayaran;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class PembayaransTable
@@ -23,8 +25,11 @@ class PembayaransTable
                 TextColumn::make('total_bayar')->label('Jumlah Bayar')->money('IDR', locale: 'id')->sortable(),
             ])
             ->defaultSort('tanggal_bayar', 'desc')
+            ->filters([SelectFilter::make('metode_pembayaran')->label('Metode')->options(['tunai'=>'Tunai','transfer'=>'Transfer'])])
+            ->emptyStateHeading('Belum ada pembayaran')
+            ->emptyStateDescription('Pembayaran yang dicatat terhadap PO akan tampil di sini.')
             ->striped()
-            ->recordActions([ViewAction::make(), Action::make('cetakPdf')->label('PDF')->icon('heroicon-o-printer')->url(fn (Pembayaran $record) => route('admin.cetak.pembayaran', ['pembayaran' => $record]))->openUrlInNewTab(), EditAction::make()])
+            ->recordActions([ActionGroup::make([ViewAction::make(), Action::make('cetakPdf')->label('Cetak PDF')->icon('heroicon-o-printer')->url(fn (Pembayaran $record) => route('admin.cetak.pembayaran', ['pembayaran' => $record]))->openUrlInNewTab(), EditAction::make()])->icon('heroicon-m-ellipsis-vertical')])
             ->toolbarActions([]);
     }
 }

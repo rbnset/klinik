@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Obats\RelationManagers;
 
 use App\Filament\Admin\Resources\PembelianObats\PembelianObatResource;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -60,12 +61,14 @@ class RiwayatHargaBeliRelationManager extends RelationManager
             ->defaultSort('pembelian_obat.tanggal_pesan', 'desc')
             ->filters([])
             ->headerActions([])
-            ->recordActions([
-                Action::make('lihat')
+            ->recordActions([ActionGroup::make([Action::make('lihat')
                     ->label('Lihat')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(fn (Model $record): string => PembelianObatResource::getUrl('view', ['record' => $record->id_pembelian_obat])),
+                ])->icon('heroicon-m-ellipsis-vertical'),
             ])
+            ->emptyStateHeading('Belum ada riwayat harga')
+            ->emptyStateDescription('Harga beli terakhir akan tersedia setelah ada transaksi pembelian.')
             ->toolbarActions([]);
     }
 }

@@ -28,6 +28,11 @@ class PenerimaanObatInfolist
                     TextEntry::make('nomor_faktur')->label('Nomor Faktur')->placeholder('-')->copyable(),
                     TextEntry::make('tanggal_terima')->label('Tanggal Terima')->date('d M Y'),
                     TextEntry::make('stok_diposting_at')->label('Stok Diposting')->dateTime('d M Y, H:i')->placeholder('Belum diposting'),
+                    TextEntry::make('status_stok')
+                        ->label('Status Stok')
+                        ->state(fn ($record) => $record->stok_diposting_at ? 'Sudah Diposting' : 'Belum Diposting')
+                        ->badge()
+                        ->color(fn ($record): string => $record->stok_diposting_at ? 'success' : 'warning'),
                 ])->columns(2),
 
             Section::make('Rincian Barang Diterima')

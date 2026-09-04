@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\KategoriObats\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -36,13 +37,10 @@ class KategoriObatsTable
             ])
             ->defaultSort('created_at', 'desc') // Default urutan: Data terbaru di paling atas
             ->striped() // Memberikan warna selang-seling pada baris tabel agar tidak monoton
-            ->filters([
-                //
-            ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+            ->filters([])
+            ->emptyStateHeading('Belum ada kategori')
+            ->emptyStateDescription('Tambahkan kategori obat untuk mengelompokkan katalog.')
+            ->recordActions([ActionGroup::make([ViewAction::make(), EditAction::make()])->icon('heroicon-m-ellipsis-vertical')])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

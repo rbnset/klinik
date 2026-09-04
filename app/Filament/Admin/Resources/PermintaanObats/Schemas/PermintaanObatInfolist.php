@@ -43,6 +43,33 @@ class PermintaanObatInfolist
                     TextEntry::make('keterangan')->label('Catatan / Urgensi')->placeholder('-')->columnSpanFull(),
                 ])->columns(2),
 
+            Section::make('Alur Permintaan')
+                ->description('Persetujuan sekaligus menjadi titik posting pengeluaran stok untuk permintaan internal.')
+                ->icon('heroicon-o-arrow-path')
+                ->schema([
+                    TextEntry::make('status')
+                        ->label('Tahap')
+                        ->badge()
+                        ->formatStateUsing(fn ($state) => match ($state) {
+                            'pending' => 'Menunggu Persetujuan',
+                            'disetujui' => 'Disetujui & Stok Dikurangi',
+                            'ditolak' => 'Ditolak',
+                            'dibatalkan' => 'Dibatalkan',
+                            default => $state,
+                        })
+                        ->color(fn (string $state): string => match ($state) {
+                            'pending' => 'warning',
+                            'disetujui' => 'success',
+                            'ditolak' => 'danger',
+                            'dibatalkan' => 'gray',
+                            default => 'gray',
+                        }),
+                    TextEntry::make('stok_diposting_at')
+                        ->label('Posting Stok')
+                        ->dateTime('d M Y, H:i')
+                        ->placeholder('Belum diposting'),
+                ])->columns(2),
+
             Section::make('Rincian Obat')
                 ->description('Daftar obat yang diajukan beserta jumlah yang disetujui.')
                 ->icon('heroicon-o-clipboard-document-list')

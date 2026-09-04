@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\PermintaanObats\PermintaanObatResource;
 use App\Filament\Admin\Resources\PenyesuaianStoks\PenyesuaianStokResource;
 use App\Filament\Admin\Resources\RiwayatStoks\RiwayatStokResource;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -80,11 +81,11 @@ class RiwayatStokRelationManager extends RelationManager
             ->emptyStateHeading('Belum ada riwayat stok')
             ->emptyStateDescription('Riwayat akan tercatat otomatis saat penerimaan, permintaan internal, atau penyesuaian stok diproses.')
             ->headerActions([])
-            ->recordActions([
-                Action::make('lihat')
+            ->recordActions([ActionGroup::make([Action::make('lihat')
                     ->label('Lihat')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(fn (Model $record): string => $this->referenceUrl($record)),
+                ])->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->toolbarActions([]);
     }

@@ -34,6 +34,21 @@ class ObatInfolist
                         ->label('Stok Tersedia')
                         ->numeric()
                         ->suffix(fn ($record) => ' ' . ($record->satuan ?? 'unit')),
+                    TextEntry::make('status_stok')
+                        ->label('Kondisi Stok')
+                        ->state(fn ($record) => match (true) {
+                            (int) $record->stok <= 0 => 'Habis',
+                            (int) $record->stok <= 10 => 'Kritis',
+                            (int) $record->stok <= 30 => 'Menipis',
+                            default => 'Aman',
+                        })
+                        ->badge()
+                        ->color(fn ($record): string => match (true) {
+                            (int) $record->stok <= 0 => 'danger',
+                            (int) $record->stok <= 10 => 'warning',
+                            (int) $record->stok <= 30 => 'info',
+                            default => 'success',
+                        }),
                     TextEntry::make('harga_beli_terakhir')
                         ->label('Harga Beli Terakhir')
                         ->money('IDR', locale: 'id')

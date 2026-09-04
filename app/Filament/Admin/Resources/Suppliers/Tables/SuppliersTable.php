@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Suppliers\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -36,10 +37,9 @@ class SuppliersTable
             ->defaultSort('created_at', 'desc')
             ->striped()
             ->filters([])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
+            ->emptyStateHeading('Belum ada supplier')
+            ->emptyStateDescription('Tambahkan supplier untuk membuat pemesanan obat.')
+            ->recordActions([ActionGroup::make([ViewAction::make(), EditAction::make()])->icon('heroicon-m-ellipsis-vertical')])
             ->toolbarActions([
                 BulkActionGroup::make([DeleteBulkAction::make()]),
             ]);

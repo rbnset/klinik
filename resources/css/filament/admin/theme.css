@@ -2,3 +2,11 @@
 
 @source '../../../../app/Filament/Admin/**/*';
 @source '../../../../resources/views/filament/admin/**/*';
+
+/* Final UX polish: subtle interaction feedback without changing the visual language. */
+.fi-ta-row { transition: background-color .15s ease; }
+.fi-ta-row:hover { background: color-mix(in srgb, currentColor 3%, transparent); }
+.fi-section { border-radius: 1rem; }
+.fi-btn { transition: transform .12s ease, box-shadow .12s ease; }
+.fi-btn:active { transform: translateY(1px); }
+.fi-badge { font-weight: 650; }

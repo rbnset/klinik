@@ -27,6 +27,7 @@ class PembayaranInfolist
                     TextEntry::make('tanggal_bayar')->label('Tanggal Pembayaran')->date('d M Y'),
                     TextEntry::make('metode_pembayaran')->label('Metode Pembayaran')->badge(),
                     TextEntry::make('total_bayar')->label('Jumlah Pembayaran')->money('IDR', locale: 'id')->weight('bold'),
+                    TextEntry::make('pembelian_obat.sisa_tagihan')->label('Sisa Tagihan PO')->money('IDR', locale: 'id')->weight('bold'),
                 ])->columns(2),
 
             Section::make('Informasi Sistem')

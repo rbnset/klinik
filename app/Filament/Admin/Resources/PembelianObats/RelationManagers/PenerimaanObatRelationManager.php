@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\PembelianObats\RelationManagers;
 use App\Filament\Admin\Resources\PenerimaanObats\PenerimaanObatResource;
 use App\Models\PenerimaanObat;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -34,9 +35,9 @@ class PenerimaanObatRelationManager extends RelationManager
             ->headerActions([
                 Action::make('catatPenerimaan')->label('Catat Penerimaan')->icon('heroicon-o-clipboard-document-check')->url(fn () => PenerimaanObatResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->status_penerimaan !== 'lengkap'),
             ])
-            ->recordActions([
+            ->recordActions([ActionGroup::make([
                 ViewAction::make()->url(fn (PenerimaanObat $record) => PenerimaanObatResource::getUrl('view', ['record' => $record])),
                 EditAction::make()->url(fn (PenerimaanObat $record) => PenerimaanObatResource::getUrl('edit', ['record' => $record]))->visible(fn (PenerimaanObat $record) => ! $record->stok_diposting_at),
-            ]);
+            ])->icon('heroicon-m-ellipsis-vertical')]);
     }
 }

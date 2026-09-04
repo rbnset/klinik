@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\PembelianObats\RelationManagers;
 use App\Filament\Admin\Resources\Pembayarans\PembayaranResource;
 use App\Models\Pembayaran;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -33,9 +34,9 @@ class PembayaranRelationManager extends RelationManager
             ->headerActions([
                 Action::make('catatPembayaran')->label('Catat Pembayaran')->icon('heroicon-o-banknotes')->url(fn () => PembayaranResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->sisa_tagihan > 0),
             ])
-            ->recordActions([
+            ->recordActions([ActionGroup::make([
                 ViewAction::make()->url(fn (Pembayaran $record) => PembayaranResource::getUrl('view', ['record' => $record])),
                 EditAction::make()->url(fn (Pembayaran $record) => PembayaranResource::getUrl('edit', ['record' => $record])),
-            ]);
+            ])->icon('heroicon-m-ellipsis-vertical')]);
     }
 }

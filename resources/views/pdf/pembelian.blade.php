@@ -1,6 +1,7 @@
 @extends('pdf.layout')
 @section('content')
 <h1>Purchase Order</h1>
+<div class="document-code">Dokumen: PO-{{ str_pad($pembelian->id, 5, '0', STR_PAD_LEFT) }}</div>
 <table class="meta">
     <tr><td class="label">Nomor PO</td><td><strong>PO-{{ str_pad($pembelian->id, 5, '0', STR_PAD_LEFT) }}</strong></td></tr>
     <tr><td class="label">Tanggal Pesan</td><td>{{ $pembelian->tanggal_pesan ? \Carbon\Carbon::parse($pembelian->tanggal_pesan)->format('d/m/Y') : '-' }}</td></tr>

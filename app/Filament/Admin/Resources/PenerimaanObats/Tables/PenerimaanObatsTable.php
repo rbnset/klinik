@@ -3,10 +3,12 @@
 namespace App\Filament\Admin\Resources\PenerimaanObats\Tables;
 
 use App\Models\PenerimaanObat;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class PenerimaanObatsTable
@@ -22,11 +24,16 @@ class PenerimaanObatsTable
                 TextColumn::make('stok_diposting_at')->label('Status Stok')->badge()->formatStateUsing(fn ($state) => $state ? 'Diposting' : 'Belum Diposting')->color(fn ($state) => $state ? 'success' : 'warning'),
             ])
             ->defaultSort('tanggal_terima', 'desc')
+            ->filters([SelectFilter::make('stok_diposting_at')->label('Status Stok')->options(['1'=>'Sudah Diposting','0'=>'Belum Diposting'])->query(function ($query, array $data) { if (($data['value'] ?? null) === '1') $query->whereNotNull('stok_diposting_at'); if (($data['value'] ?? null) === '0') $query->whereNull('stok_diposting_at'); })])
+            ->emptyStateHeading('Belum ada penerimaan')
+            ->emptyStateDescription('Penerimaan barang dari supplier akan tampil di sini.')
             ->striped()
             ->recordActions([
-                ViewAction::make(),
-                Action::make('cetakPdf')->label('PDF')->icon('heroicon-o-printer')->url(fn (PenerimaanObat $record) => route('admin.cetak.penerimaan', ['penerimaan' => $record]))->openUrlInNewTab(),
-                EditAction::make()->visible(fn (PenerimaanObat $record) => ! $record->stok_diposting_at),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    Action::make('cetakPdf')->label('Cetak PDF')->icon('heroicon-o-printer')->url(fn (PenerimaanObat $record) => route('admin.cetak.penerimaan', ['penerimaan' => $record]))->openUrlInNewTab(),
+                    EditAction::make()->visible(fn (PenerimaanObat $record) => ! $record->stok_diposting_at),
+                ])->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->toolbarActions([]);
     }

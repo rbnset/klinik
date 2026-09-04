@@ -99,6 +99,45 @@ class PembelianObatInfolist
                         ])->columns(3),
                 ]),
 
+            Section::make('Alur Pengadaan')
+                ->description('Posisi transaksi dapat dipantau dari penerimaan barang dan pembayaran tagihan.')
+                ->icon('heroicon-o-arrow-path')
+                ->schema([
+                    TextEntry::make('status_penerimaan')
+                        ->label('Penerimaan')
+                        ->badge()
+                        ->formatStateUsing(fn ($state) => match ($state) {
+                            'belum_diterima' => 'Belum Diterima',
+                            'sebagian' => 'Sebagian Diterima',
+                            'lengkap' => 'Penerimaan Lengkap',
+                            default => $state,
+                        })
+                        ->color(fn (string $state): string => match ($state) {
+                            'belum_diterima' => 'danger',
+                            'sebagian' => 'warning',
+                            'lengkap' => 'success',
+                            default => 'gray',
+                        }),
+                    TextEntry::make('status_pembayaran')
+                        ->label('Pembayaran')
+                        ->badge()
+                        ->formatStateUsing(fn ($state) => match ($state) {
+                            'belum_dibayar' => 'Belum Dibayar',
+                            'sebagian' => 'Sebagian Dibayar',
+                            'lunas' => 'Lunas',
+                            default => $state,
+                        })
+                        ->color(fn (string $state): string => match ($state) {
+                            'belum_dibayar' => 'danger',
+                            'sebagian' => 'warning',
+                            'lunas' => 'success',
+                            default => 'gray',
+                        }),
+                    TextEntry::make('total_item_diterima')
+                        ->label('Item Lengkap')
+                        ->formatStateUsing(fn ($state, $record) => $state . ' / ' . $record->total_item . ' item'),
+                ])->columns(3),
+
             Section::make('Informasi Sistem')
                 ->icon('heroicon-o-clock')
                 ->collapsed()

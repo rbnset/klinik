@@ -21,6 +21,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             \App\Filament\Admin\Widgets\StatsOverview::class,
+            \App\Filament\Admin\Widgets\QuickActionsWidget::class,
             \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
             \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
         ];

@@ -84,3 +84,12 @@
 @media(max-width:1100px){
     .ob-crud-shell,.ob-detail-shell,.procurement-crud-shell,.procurement-detail-shell{max-width:100%}
 }
+
+
+/* Final UX polish: compact, consistent, and low-noise. */
+.fi-ta-row { transition: background-color .15s ease; }
+.fi-ta-row:hover { background: color-mix(in srgb, currentColor 3%, transparent); }
+.fi-section { border-radius: 1rem; }
+.fi-btn { transition: transform .12s ease, box-shadow .12s ease; }
+.fi-btn:active { transform: translateY(1px); }
+.fi-badge { font-weight: 650; }

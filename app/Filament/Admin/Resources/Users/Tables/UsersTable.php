@@ -2,11 +2,13 @@
 
 namespace App\Filament\Admin\Resources\Users\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -44,7 +46,10 @@ class UsersTable
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
-            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->filters([SelectFilter::make('role')->label('Hak Akses')->options(['admin'=>'ADMIN','karyawan'=>'KARYAWAN','bidan'=>'BIDAN','pemilik'=>'PEMILIK','supplier'=>'SUPPLIER'])])
+            ->emptyStateHeading('Belum ada pengguna')
+            ->emptyStateDescription('Akun pengguna sistem akan tampil di sini.')
+            ->recordActions([ActionGroup::make([ViewAction::make(), EditAction::make()])->icon('heroicon-m-ellipsis-vertical')])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

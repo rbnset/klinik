@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\PermintaanObats\Tables;
 
 use App\Models\PermintaanObat;
 use App\Notifications\PermintaanObatDiperbarui;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -11,6 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,9 +60,11 @@ class PermintaanObatsTable
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
+            ->filters([SelectFilter::make('status')->label('Status')->options(['pending'=>'Pending','disetujui'=>'Disetujui','ditolak'=>'Ditolak','dibatalkan'=>'Dibatalkan'])])
+            ->emptyStateHeading('Belum ada permintaan')
+            ->emptyStateDescription('Permintaan internal obat akan tampil di sini.')
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make()
+                ActionGroup::make([ViewAction::make(), EditAction::make()
                     ->visible(function ($record) {
 
                         $user = auth()->user();
@@ -80,6 +84,7 @@ class PermintaanObatsTable
                         // Admin/Pemilik bebas melihat tombol edit
                         return true;
                     })
+                ])->icon('heroicon-m-ellipsis-vertical')
             ])
             ->toolbarActions([]);
     }
