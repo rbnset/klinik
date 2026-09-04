@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             // 1. NAMA APLIKASI
-            ->brandName('Klinik Bidan Delima')
+            ->brandName('Praktek Bidan Puji Susanti')
 
             // 2. LOGO & FAVICON
             ->brandLogo(asset('images/logo.jpeg')) // Memanggil logo dari folder public/images

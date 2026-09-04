@@ -4,7 +4,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\SupplierRegistrationController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [SupplierRegistrationController::class, 'create'])->name('landing');
+Route::view('/', 'welcome')->name('landing');
 Route::get('/daftar-supplier', [SupplierRegistrationController::class, 'create'])->name('supplier.register');
 Route::post('/daftar-supplier', [SupplierRegistrationController::class, 'store'])->name('supplier.register.store');
 

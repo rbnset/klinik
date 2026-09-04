@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pengajuan Akun Supplier — Klinik Rejosari</title>
-    <meta name="description" content="Ajukan akun supplier untuk terhubung dengan sistem pengadaan Klinik Rejosari.">
+    <title>Pengajuan Akun Supplier — Praktek Bidan Puji Susanti</title>
+    <meta name="description" content="Ajukan akun supplier untuk terhubung dengan sistem pengadaan Praktek Bidan Puji Susanti.">
     <script>
         (() => {
             const stored = localStorage.getItem('theme');
@@ -32,9 +32,9 @@
 <body>
 <div class="page">
     <header class="nav">
-        <a href="{{ route('landing') }}" class="brand" aria-label="Klinik Rejosari">
-            <div class="brand-mark">@if(file_exists(public_path('images/logo.jpeg')))<img src="{{ asset('images/logo.jpeg') }}" alt="Logo Klinik Rejosari" style="width:100%;height:100%;object-fit:cover;border-radius:13px">@else KR @endif</div>
-            <div class="brand-text">Klinik Rejosari<small>Sistem Pengadaan & Persediaan</small></div>
+        <a href="{{ route('landing') }}" class="brand" aria-label="Praktek Bidan Puji Susanti">
+            <div class="brand-mark">@if(file_exists(public_path('images/logo.jpeg')))<img src="{{ asset('images/logo.jpeg') }}" alt="Logo Praktek Bidan Puji Susanti" style="width:100%;height:100%;object-fit:cover;border-radius:13px">@else KR @endif</div>
+            <div class="brand-text">Praktek Bidan Puji Susanti<small>Sistem Pengadaan & Persediaan</small></div>
         </a>
         <div class="nav-actions">
             <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ubah mode tampilan" title="Ubah mode tampilan">☾</button>
@@ -46,7 +46,7 @@
         <section class="hero">
             <div>
                 <span class="eyebrow"><span class="dot"></span> Portal Supplier</span>
-                <h1>Mulai terhubung dengan <span>pengadaan Klinik Rejosari.</span></h1>
+                <h1>Mulai terhubung dengan <span>pengadaan Praktek Bidan Puji Susanti.</span></h1>
                 <p class="hero-copy">Ajukan akun supplier melalui formulir resmi. Setelah data diperiksa dan disetujui oleh admin klinik, Anda dapat menggunakan akun untuk mengakses sistem.</p>
                 <div class="hero-actions">
                     <a class="primary" href="#daftar">Ajukan Akun Supplier <span>→</span></a>
@@ -63,7 +63,7 @@
                 @if(session('supplier_application_success'))
                     <div class="success">
                         <strong>Pengajuan akun berhasil dikirim.</strong>
-                        <p>Data Anda sudah tercatat dan menunggu pemeriksaan admin Klinik Rejosari. Anda belum dapat masuk sampai pengajuan disetujui.</p>
+                        <p>Data Anda sudah tercatat dan menunggu pemeriksaan admin Praktek Bidan Puji Susanti. Anda belum dapat masuk sampai pengajuan disetujui.</p>
                         <div class="success-actions">
                             <a href="{{ route('landing') }}">Kembali ke beranda</a>
                             <a href="{{ url('/admin/login') }}">Ke halaman masuk</a>
@@ -72,7 +72,7 @@
                 @else
                     <div class="card-head">
                         <div><h2>Ajukan akun supplier</h2><p>Isi data perusahaan dan penanggung jawab dengan benar.</p></div>
-                        <div class="step">01</div>
+                        
                     </div>
 
                     @if($errors->any())
@@ -123,7 +123,7 @@
                         </div>
                         <label class="terms">
                             <input type="checkbox" name="terms" value="1" {{ old('terms') ? 'checked' : '' }} required>
-                            <span>Saya menyatakan bahwa data supplier yang saya masukkan benar dan bersedia menunggu proses verifikasi dari pihak Klinik Rejosari.</span>
+                            <span>Saya menyatakan bahwa data supplier yang saya masukkan benar dan bersedia menunggu proses verifikasi dari pihak Praktek Bidan Puji Susanti.</span>
                         </label>
                         @error('terms')<div class="error" style="margin:-8px 0 12px">{{ $message }}</div>@enderror
                         <button class="submit" type="submit">Kirim Pengajuan Akun</button>
@@ -146,7 +146,7 @@
     </main>
 
     <footer class="footer">
-        <div class="footer-inner"><span>© {{ date('Y') }} <strong>Klinik Rejosari</strong></span><span>Rejosari, Jogotirto, Kec. Berbah, Kabupaten Sleman, DIY 55573</span></div>
+        <div class="footer-inner"><span>© {{ date('Y') }} <strong>Praktek Bidan Puji Susanti</strong></span><span>Karongan RT.03 / RW.11, Jogotirto, Kec. Berbah, Kabupaten Sleman, DIY</span></div>
     </footer>
 </div>
 <script>

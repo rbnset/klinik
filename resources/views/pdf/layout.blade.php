@@ -42,6 +42,7 @@
                 <td class="clinic">
                     <div class="clinic-name">{{ $clinicName }}</div>
                     <div class="address">{{ $clinicAddress }}</div>
+                    @if(!empty($clinicPermit))<div class="address">{{ $clinicPermit }}</div>@endif
                 </td>
             </tr>
         </table>

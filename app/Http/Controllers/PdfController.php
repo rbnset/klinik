@@ -68,8 +68,9 @@ class PdfController extends Controller
     private function render(string $view, array $data, string $filename): Response
     {
         $data['logo'] = $this->logoDataUri();
-        $data['clinicName'] = 'KLINIK REJOSARI';
-        $data['clinicAddress'] = 'Rejosari, Jogotirto, Kec. Berbah, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55573';
+        $data['clinicName'] = 'PRAKTEK BIDAN PUJI SUSANTI';
+        $data['clinicAddress'] = 'Karongan RT.03 / RW.11, Jogotirto, Kecamatan Berbah, Kabupaten Sleman, Daerah Istimewa Yogyakarta';
+        $data['clinicPermit'] = 'Nomor Izin Usaha: 446/3280/7201/III-25';
 
         return Pdf::loadView($view, $data)
             ->setPaper('a4', 'portrait')
