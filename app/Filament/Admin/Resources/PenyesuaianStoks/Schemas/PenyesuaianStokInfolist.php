@@ -41,6 +41,7 @@ class PenyesuaianStokInfolist
                         ->label('Alasan')
                         ->formatStateUsing(fn ($state) => ucfirst(str_replace('_', ' ', (string) $state))),
                     TextEntry::make('jumlah')->label('Kuantitas')->numeric()->weight('bold'),
+                    TextEntry::make('stok_diposting_at')->label('Stok Diposting')->dateTime('d M Y, H:i')->placeholder('Belum diposting'),
                     TextEntry::make('keterangan')->label('Catatan')->placeholder('-')->columnSpanFull(),
                 ])->columns(2),
 

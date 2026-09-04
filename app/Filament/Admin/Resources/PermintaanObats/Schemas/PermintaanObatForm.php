@@ -28,7 +28,6 @@ class PermintaanObatForm
                         ->disabled()
                         ->dehydrated(false),
                     Hidden::make('id_pengguna')->default(fn () => auth()->id()),
-                    Hidden::make('status')->default('pending'),
                     Select::make('status')
                         ->label('Keputusan Gudang')
                         ->options([
@@ -37,7 +36,7 @@ class PermintaanObatForm
                             'ditolak' => 'Ditolak',
                         ])
                         ->visible(fn () => auth()->user()->role === 'karyawan')
-                        ->disabled(fn ($record) => in_array($record?->status, ['disetujui', 'ditolak'], true)),
+                        ->disabled(true),
                     DatePicker::make('tanggal_permintaan')
                         ->label('Tanggal Pengajuan')
                         ->default(now())

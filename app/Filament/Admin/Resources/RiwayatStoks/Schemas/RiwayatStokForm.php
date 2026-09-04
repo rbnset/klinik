@@ -11,7 +11,7 @@ class RiwayatStokForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Audit Mutasi Stok')
+            Section::make('Audit Riwayat Stok')
                 ->description('Riwayat stok bersifat read-only dan tidak dapat diubah melalui formulir.')
                 ->icon('heroicon-o-document-chart-bar')
                 ->schema([

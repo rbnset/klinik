@@ -77,6 +77,8 @@ class RiwayatStokRelationManager extends RelationManager
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading('Belum ada riwayat stok')
+            ->emptyStateDescription('Riwayat akan tercatat otomatis saat penerimaan, permintaan internal, atau penyesuaian stok diproses.')
             ->headerActions([])
             ->recordActions([
                 Action::make('lihat')

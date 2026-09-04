@@ -2,8 +2,6 @@
 
 namespace App\Filament\Admin\Resources\PenyesuaianStoks\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -18,7 +16,7 @@ class PenyesuaianStoksTable
                 TextColumn::make('tanggal')->label('Tanggal')->dateTime('d M Y')->sortable(),
                 TextColumn::make('obat.nama_obat')->label('Nama Obat')->searchable()->weight('bold'),
                 TextColumn::make('jenis')
-                    ->label('Jenis Mutasi')
+                    ->label('Tindakan')
                     ->badge()
                     // UX: Warna hijau untuk penambahan, merah untuk pengurangan
                     ->color(fn(string $state): string => match ($state) {
@@ -31,7 +29,10 @@ class PenyesuaianStoksTable
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
-            ->recordActions([ViewAction::make(), EditAction::make()])
-            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()->visible(fn ($record) => ! $record->stok_diposting_at),
+            ])
+            ->toolbarActions([]);
     }
 }

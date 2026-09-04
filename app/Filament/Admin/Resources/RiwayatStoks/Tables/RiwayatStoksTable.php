@@ -12,9 +12,10 @@ class RiwayatStoksTable
     {
         return $table
             ->columns([
-                TextColumn::make('created_at')
-                    ->label('Tanggal Mutasi')
-                    ->dateTime('d M Y, H:i')
+                TextColumn::make('tanggal_mutasi')
+                    ->label('Tanggal')
+                    ->state(fn ($record) => $record->tanggal_mutasi ?: $record->created_at)
+                    ->date('d M Y')
                     ->sortable(),
 
                 TextColumn::make('obat.nama_obat')
@@ -22,8 +23,15 @@ class RiwayatStoksTable
                     ->searchable()
                     ->weight('bold'),
 
+                TextColumn::make('sumber_label')
+                    ->label('Aktivitas')
+                    ->badge()
+                    ->formatStateUsing(fn ($record) => $record->sumber_label)
+                    ->color(fn ($record) => match ($record->referensi_tipe) { 'penerimaan' => 'success', 'permintaan' => 'danger', 'penyesuaian' => 'warning', default => 'gray' })
+                    ,
+
                 TextColumn::make('jenis_transaksi')
-                    ->label('Jenis Mutasi')
+                    ->label('Arah Stok')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'masuk' => 'success', // Hijau untuk barang masuk

@@ -26,11 +26,13 @@ class PenerimaanObatRelationManager extends RelationManager
                 TextColumn::make('id')->label('No. GR')->formatStateUsing(fn ($state) => 'GR-' . str_pad((string)$state, 5, '0', STR_PAD_LEFT))->weight('bold'),
                 TextColumn::make('nomor_faktur')->label('No. Faktur')->searchable()->weight('bold'),
                 TextColumn::make('tanggal_terima')->label('Tanggal Terima')->date('d M Y')->sortable(),
-                TextColumn::make('detail_penerimaan_sum_jumlah_diterima')->label('Qty Diterima')->state(fn (PenerimaanObat $record) => $record->detail_penerimaan()->sum('jumlah_diterima')),
+                TextColumn::make('detail_penerimaan_sum_jumlah_diterima')->label('Qty Diterima')->state(fn (PenerimaanObat $record) => $record->detail_penerimaan()->sum('jumlah_diterima'))->numeric(),
                 TextColumn::make('stok_diposting_at')->label('Status Stok')->badge()->formatStateUsing(fn ($state) => $state ? 'Sudah Diposting' : 'Belum Diposting')->color(fn ($state) => $state ? 'success' : 'warning'),
             ])
+            ->emptyStateHeading('Belum ada penerimaan')
+            ->emptyStateDescription('Catat penerimaan langsung dari PO ini setelah barang datang.')
             ->headerActions([
-                Action::make('catatPenerimaan')->label('Catat Penerimaan')->icon('heroicon-o-clipboard-document-check')->url(fn () => PenerimaanObatResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()])),
+                Action::make('catatPenerimaan')->label('Catat Penerimaan')->icon('heroicon-o-clipboard-document-check')->url(fn () => PenerimaanObatResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->status_penerimaan !== 'lengkap'),
             ])
             ->recordActions([
                 ViewAction::make()->url(fn (PenerimaanObat $record) => PenerimaanObatResource::getUrl('view', ['record' => $record])),

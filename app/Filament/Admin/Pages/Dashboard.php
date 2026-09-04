@@ -21,8 +21,6 @@ class Dashboard extends BaseDashboard
     {
         return [
             \App\Filament\Admin\Widgets\StatsOverview::class,
-            \App\Filament\Admin\Widgets\TrenPembelianChart::class,
-            \App\Filament\Admin\Widgets\ProporsiStokChart::class,
             \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
             \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
         ];

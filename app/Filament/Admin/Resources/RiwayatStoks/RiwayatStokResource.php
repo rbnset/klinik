@@ -21,7 +21,7 @@ class RiwayatStokResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup =  'LAPORAN & AUDIT';
     protected static ?int $navigationSort = 1;
     protected static ?string $modelLabel = 'Buku Besar Stok';
-    protected static ?string $pluralModelLabel = 'Riwayat Mutasi Stok';
+    protected static ?string $pluralModelLabel = 'Riwayat Stok';
 
     public static function form(Schema $schema): Schema
     {

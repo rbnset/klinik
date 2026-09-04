@@ -2,8 +2,7 @@
 
 namespace App\Filament\Admin\Resources\PenerimaanObats\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use App\Models\PenerimaanObat;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -15,34 +14,18 @@ class PenerimaanObatsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id_pembelian_obat')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('nomor_faktur')
-                    ->searchable(),
-                TextColumn::make('tanggal_terima')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('id')->label('No. GR')->formatStateUsing(fn ($state) => 'GR-' . str_pad((string) $state, 5, '0', STR_PAD_LEFT))->fontFamily('mono')->weight('bold'),
+                TextColumn::make('id_pembelian_obat')->label('No. PO')->formatStateUsing(fn ($state) => 'PO-' . str_pad((string) $state, 5, '0', STR_PAD_LEFT))->sortable(),
+                TextColumn::make('nomor_faktur')->label('No. Faktur')->searchable()->weight('bold'),
+                TextColumn::make('tanggal_terima')->label('Tanggal Terima')->date('d M Y')->sortable(),
+                TextColumn::make('stok_diposting_at')->label('Status Stok')->badge()->formatStateUsing(fn ($state) => $state ? 'Diposting' : 'Belum Diposting')->color(fn ($state) => $state ? 'success' : 'warning'),
             ])
-            ->filters([
-                //
-            ])
+            ->defaultSort('tanggal_terima', 'desc')
+            ->striped()
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()->visible(fn (PenerimaanObat $record) => ! $record->stok_diposting_at),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }

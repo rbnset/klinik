@@ -28,8 +28,10 @@ class PembayaranRelationManager extends RelationManager
                 TextColumn::make('metode_pembayaran')->label('Metode')->badge()->formatStateUsing(fn ($state) => ucfirst($state)),
                 TextColumn::make('total_bayar')->label('Jumlah Bayar')->money('IDR', locale: 'id')->sortable(),
             ])
+            ->emptyStateHeading('Belum ada pembayaran')
+            ->emptyStateDescription('Catat pembayaran dari PO ini. Sistem akan menghitung sisa tagihan otomatis.')
             ->headerActions([
-                Action::make('catatPembayaran')->label('Catat Pembayaran')->icon('heroicon-o-banknotes')->url(fn () => PembayaranResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()])),
+                Action::make('catatPembayaran')->label('Catat Pembayaran')->icon('heroicon-o-banknotes')->url(fn () => PembayaranResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->sisa_tagihan > 0),
             ])
             ->recordActions([
                 ViewAction::make()->url(fn (Pembayaran $record) => PembayaranResource::getUrl('view', ['record' => $record])),

@@ -2,8 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Pembayarans\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use App\Models\Pembayaran;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -15,37 +14,16 @@ class PembayaransTable
     {
         return $table
             ->columns([
-                TextColumn::make('id_pembelian_obat')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('tanggal_bayar')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('metode_pembayaran')
-                    ->badge(),
-                TextColumn::make('total_bayar')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('id')->label('No. Pembayaran')->formatStateUsing(fn ($state) => 'PAY-' . str_pad((string) $state, 5, '0', STR_PAD_LEFT))->fontFamily('mono')->weight('bold'),
+                TextColumn::make('pembelian_obat.id')->label('No. PO')->formatStateUsing(fn ($state) => 'PO-' . str_pad((string) $state, 5, '0', STR_PAD_LEFT))->sortable(),
+                TextColumn::make('pembelian_obat.supplier.nama_supplier')->label('Supplier')->searchable(),
+                TextColumn::make('tanggal_bayar')->label('Tanggal Bayar')->date('d M Y')->sortable(),
+                TextColumn::make('metode_pembayaran')->label('Metode')->badge()->formatStateUsing(fn ($state) => ucfirst($state)),
+                TextColumn::make('total_bayar')->label('Jumlah Bayar')->money('IDR', locale: 'id')->sortable(),
             ])
-            ->filters([
-                //
-            ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->defaultSort('tanggal_bayar', 'desc')
+            ->striped()
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([]);
     }
 }

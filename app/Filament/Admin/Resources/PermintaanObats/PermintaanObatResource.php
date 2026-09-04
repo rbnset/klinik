@@ -79,18 +79,13 @@ class PermintaanObatResource extends Resource
     {
         $user = auth()->user();
 
-        if ($user->role === 'admin') {
-            return true;
+        if (! $user || $record->status !== 'pending') {
+            return false;
         }
 
-        return $record->status === 'pending'
-            && (
-                $user->role === 'karyawan'
-                || (
-                    $user->role === 'bidan'
-                    && $record->id_pengguna === $user->id
-                )
-            );
+        return $user->role === 'admin'
+            || $user->role === 'karyawan'
+            || ($user->role === 'bidan' && $record->id_pengguna === $user->id);
     }
 
     public static function getNavigationBadge(): ?string

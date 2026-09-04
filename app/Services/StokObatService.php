@@ -66,7 +66,11 @@ class StokObatService
                 return;
             }
 
-            $penerimaan->load('detail_penerimaan.detail_pembelian.obat');
+            $penerimaan->load('detail_penerimaan.detail_pembelian.obat', 'pembelian_obat');
+
+            if ($penerimaan->pembelian_obat?->status === 'dibatalkan') {
+                throw ValidationException::withMessages(['id_pembelian_obat' => 'PO yang dibatalkan tidak dapat menerima barang.']);
+            }
 
             if ($penerimaan->detail_penerimaan->isEmpty()) {
                 throw ValidationException::withMessages([
@@ -173,6 +177,50 @@ class StokObatService
         });
     }
 
+
+    /** Menyetujui permintaan dan langsung memposting pengurangan stok secara atomik. */
+    public function setujuiPermintaan(PermintaanObat $permintaan): void
+    {
+        DB::transaction(function () use ($permintaan) {
+            $lockedPermintaan = PermintaanObat::query()->lockForUpdate()->findOrFail($permintaan->id);
+
+            if ($lockedPermintaan->status !== 'pending') {
+                throw ValidationException::withMessages(['status' => 'Hanya permintaan berstatus menunggu yang dapat disetujui.']);
+            }
+
+            $lockedPermintaan->load('detail_permintaan.obat');
+            if ($lockedPermintaan->detail_permintaan->isEmpty()) {
+                throw ValidationException::withMessages(['detail_permintaan' => 'Permintaan belum memiliki item obat.']);
+            }
+
+            foreach ($lockedPermintaan->detail_permintaan as $detail) {
+                $jumlah = (int) $detail->jumlah_disetujui;
+                if ($jumlah <= 0 || $jumlah > (int) $detail->jumlah_diminta) {
+                    throw ValidationException::withMessages(['detail_permintaan' => "Jumlah disetujui untuk {$detail->obat->nama_obat} harus lebih dari 0 dan tidak melebihi jumlah diminta."]);
+                }
+                if ($jumlah > (int) $detail->obat->stok) {
+                    throw ValidationException::withMessages(['detail_permintaan' => "Stok {$detail->obat->nama_obat} tidak mencukupi. Stok tersedia: {$detail->obat->stok} {$detail->obat->satuan}."]);
+                }
+            }
+
+            $lockedPermintaan->update(['status' => 'disetujui']);
+
+            foreach ($lockedPermintaan->detail_permintaan as $detail) {
+                $this->keluar(
+                    obat: $detail->obat,
+                    jumlah: (int) $detail->jumlah_disetujui,
+                    referensi: 'REQ-' . str_pad((string) $lockedPermintaan->id, 5, '0', STR_PAD_LEFT),
+                    sumber: 'permintaan',
+                    referensiId: $lockedPermintaan->id,
+                    keterangan: 'Pengeluaran obat berdasarkan permintaan internal.',
+                    tanggal: $lockedPermintaan->tanggal_permintaan?->toDateString(),
+                );
+            }
+
+            $lockedPermintaan->update(['stok_diposting_at' => now()]);
+        });
+    }
+
     /**
      * Memposting penyesuaian stok ke saldo obat.
      */
@@ -229,7 +277,7 @@ class StokObatService
     ): RiwayatStok {
         if ($jumlah <= 0) {
             throw ValidationException::withMessages([
-                'jumlah' => 'Jumlah mutasi harus lebih besar dari 0.',
+                'jumlah' => 'Jumlah perubahan stok harus lebih besar dari 0.',
             ]);
         }
 

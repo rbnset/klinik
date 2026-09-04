@@ -24,7 +24,7 @@ class RiwayatStok extends Model
             'penerimaan' => 'Penerimaan Obat',
             'permintaan' => 'Permintaan Internal',
             'penyesuaian' => 'Penyesuaian Stok',
-            default => 'Mutasi Stok',
+            default => 'Penyesuaian Stok',
         };
     }
 }

@@ -11,7 +11,7 @@ class RiwayatStokInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Informasi Mutasi Stok')
+            Section::make('Informasi Riwayat Stok')
                 ->description('Jejak perubahan persediaan yang tercatat secara otomatis dari transaksi sumber.')
                 ->icon('heroicon-o-document-chart-bar')
                 ->schema([
@@ -21,7 +21,7 @@ class RiwayatStokInfolist
                         ->fontFamily('mono')
                         ->weight('bold'),
                     TextEntry::make('tanggal_mutasi')
-                        ->label('Tanggal Mutasi')
+                        ->label('Tanggal')
                         ->state(fn ($record) => $record->tanggal_mutasi ?? $record->created_at?->toDateString())
                         ->date('d M Y'),
                     TextEntry::make('obat.nama_obat')->label('Obat')->weight('bold'),

@@ -55,7 +55,7 @@ class ObatForm
                         ->default(0)
                         ->disabled()
                         ->dehydrated(false)
-                        ->helperText(new HtmlString('Stok dikelola otomatis. Lihat <a class="font-medium text-primary-600 underline" href="' . e($stokUrl) . '">Riwayat Mutasi Stok</a> untuk audit.')),
+                        ->helperText(new HtmlString('Stok dikelola otomatis. Lihat <a class="font-medium text-primary-600 underline" href="' . e($stokUrl) . '">Riwayat Stok</a> untuk audit.')),
                     TextInput::make('harga_beli_terakhir_display')
                         ->label('Harga Beli Terakhir')
                         ->prefix('Rp')

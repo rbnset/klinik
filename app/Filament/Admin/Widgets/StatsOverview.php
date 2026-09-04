@@ -2,62 +2,49 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Filament\Admin\Resources\Obats\ObatResource;
+use App\Filament\Admin\Resources\PembelianObats\PembelianObatResource;
+use App\Filament\Admin\Resources\PermintaanObats\PermintaanObatResource;
 use App\Models\Obat;
-use App\Models\Pembayaran;
 use App\Models\PembelianObat;
 use App\Models\PermintaanObat;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends BaseWidget
 {
-    use InteractsWithPageFilters;
-
-    protected static ?int $sort = 1; // Posisi Widget di paling atas
-
-    // Mengatur agar form filter memicu update data (bukan kolomnya yang melebar)
+    protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
 
     protected function getStats(): array
     {
-        $bulan = $this->filters['bulan'] ?? now()->format('m');
-        $tahun = $this->filters['tahun'] ?? now()->format('Y');
-
-        $totalStok = Obat::sum('stok');
-
-        $totalPO = PembelianObat::whereMonth('tanggal_pesan', $bulan)
-            ->whereYear('tanggal_pesan', $tahun)
-            ->count();
-
-        $totalPermintaan = PermintaanObat::whereMonth('tanggal_permintaan', $bulan)
-            ->whereYear('tanggal_permintaan', $tahun)
-            ->count();
-
-        $totalPengeluaran = Pembayaran::whereMonth('tanggal_bayar', $bulan)
-            ->whereYear('tanggal_bayar', $tahun)
-            ->sum('total_bayar');
+        $stokKritis = Obat::where('stok', '<=', 10)->count();
+        $permintaanPending = PermintaanObat::where('status', 'pending')->count();
+        $poBelumSelesai = PembelianObat::whereIn('status', ['pending', 'diproses'])
+            ->where('status', '!=', 'dibatalkan')->count();
+        $poBelumLunas = PembelianObat::query()->get()->filter(fn ($po) => $po->sisa_tagihan > 0 && $po->status !== 'dibatalkan')->count();
 
         return [
-            Stat::make('Total Persediaan Fisik', number_format($totalStok, 0, ',', '.') . ' Unit')
-                ->description('Kapasitas seluruh obat')
-                ->descriptionIcon('heroicon-m-cube')
-                ->color('success'),
-
-            Stat::make('Permintaan Internal', $totalPermintaan . ' Dokumen')
-                ->description('Distribusi ke Bidan/Poli')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
-                ->color('warning'),
-
-            Stat::make('Pesanan Eksternal (PO)', $totalPO . ' Transaksi')
-                ->description('Pengadaan ke Supplier')
+            Stat::make('Stok Kritis', $stokKritis . ' Obat')
+                ->description('Stok ≤ 10 unit')
+                ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->color($stokKritis > 0 ? 'danger' : 'success')
+                ->url(ObatResource::getUrl()),
+            Stat::make('Permintaan Menunggu', $permintaanPending . ' Dokumen')
+                ->description('Perlu diproses gudang')
+                ->descriptionIcon('heroicon-m-inbox-arrow-down')
+                ->color($permintaanPending > 0 ? 'warning' : 'success')
+                ->url(PermintaanObatResource::getUrl()),
+            Stat::make('PO Berjalan', $poBelumSelesai . ' PO')
+                ->description('Menunggu / diproses supplier')
                 ->descriptionIcon('heroicon-m-shopping-cart')
-                ->color('info'),
-
-            Stat::make('Pengeluaran Belanja', 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'))
-                ->description('Total uang keluar bulan ini')
+                ->color('info')
+                ->url(PembelianObatResource::getUrl()),
+            Stat::make('PO Belum Lunas', $poBelumLunas . ' PO')
+                ->description('Masih memiliki sisa tagihan')
                 ->descriptionIcon('heroicon-m-banknotes')
-                ->color('danger'),
+                ->color($poBelumLunas > 0 ? 'danger' : 'success')
+                ->url(PembelianObatResource::getUrl()),
         ];
     }
 }
