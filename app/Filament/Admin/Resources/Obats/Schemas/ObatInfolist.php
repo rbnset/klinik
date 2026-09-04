@@ -52,9 +52,11 @@ class ObatInfolist
                     TextEntry::make('harga_beli_terakhir')
                         ->label('Harga Beli Terakhir')
                         ->money('IDR', locale: 'id')
-                        ->placeholder('Belum ada pembelian'),
+                        ->placeholder('Belum ada pembelian')
+                        ->visible(fn () => auth()->user()?->role !== 'bidan'),
                     TextEntry::make('pembelian_terakhir_supplier')
                         ->label('Supplier Terakhir')
+                        ->visible(fn () => auth()->user()?->role !== 'bidan')
                         ->state(function ($record) {
                             $detail = $record->detail_pembelian()
                                 ->with('pembelian_obat.supplier')

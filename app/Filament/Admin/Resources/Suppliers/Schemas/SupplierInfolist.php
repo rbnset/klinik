@@ -39,6 +39,15 @@ class SupplierInfolist
                             'ditolak' => 'danger',
                             default => 'gray',
                         }),
+                    TextEntry::make('alasan_penolakan')
+                        ->label('Alasan Penolakan')
+                        ->placeholder('Tidak ada')
+                        ->visible(fn ($record): bool => $record->status_pengajuan === 'ditolak'),
+                    TextEntry::make('pengajuan_dapat_diajukan_lagi_at')
+                        ->label('Dapat Mengajukan Kembali')
+                        ->dateTime('d M Y, H:i')
+                        ->placeholder('-')
+                        ->visible(fn ($record): bool => $record->status_pengajuan === 'ditolak'),
                 ]),
 
             Section::make('Akun Portal')

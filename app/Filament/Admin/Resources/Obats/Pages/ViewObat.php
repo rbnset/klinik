@@ -18,6 +18,7 @@ class ViewObat extends ViewRecord
             Action::make('penyesuaian')
                 ->label('Penyesuaian Stok')
                 ->icon('heroicon-o-adjustments-horizontal')
+                ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'karyawan'], true))
                 ->url(fn () => PenyesuaianStokResource::getUrl('create', ['obat' => $this->record->getKey()])),
             EditAction::make(),
         ];

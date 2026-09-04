@@ -28,8 +28,10 @@ class PembelianObatInfolist
                         ->label('Status PO')
                         ->badge()
                         ->formatStateUsing(fn ($state) => match ($state) {
-                            'pending' => 'Menunggu',
-                            'diproses' => 'Diproses Supplier',
+                            'pending' => 'Menunggu Supplier',
+                            'diproses' => 'Diproses',
+                            'menunggu_konfirmasi_gudang' => 'Menunggu Konfirmasi Gudang',
+                            'ditolak_supplier' => 'Ditolak Supplier',
                             'selesai' => 'Selesai',
                             'dibatalkan' => 'Dibatalkan',
                             default => $state,
@@ -37,6 +39,8 @@ class PembelianObatInfolist
                         ->color(fn (string $state): string => match ($state) {
                             'pending' => 'warning',
                             'diproses' => 'info',
+                            'menunggu_konfirmasi_gudang' => 'warning',
+                            'ditolak_supplier' => 'danger',
                             'selesai' => 'success',
                             'dibatalkan' => 'danger',
                             default => 'gray',
@@ -82,7 +86,8 @@ class PembelianObatInfolist
                         }),
                     TextEntry::make('total_item')->label('Jenis Obat')->formatStateUsing(fn ($state) => $state . ' item'),
                     TextEntry::make('total_item_diterima')->label('Item Lengkap Diterima')->formatStateUsing(fn ($state) => $state . ' item'),
-                ])->columns(3),
+                ])->columns(3)
+                ->visible(fn () => auth()->user()?->role !== 'supplier'),
 
             Section::make('Rincian Obat')
                 ->description('Harga pada setiap baris merupakan snapshot harga supplier saat PO dibuat.')
@@ -93,7 +98,9 @@ class PembelianObatInfolist
                             TextEntry::make('obat.nama_obat')->label('Obat')->weight('bold'),
                             TextEntry::make('obat.satuan')->label('Satuan')->placeholder('-'),
                             TextEntry::make('jumlah_pesan')->label('Qty Pesan')->numeric(),
-                            TextEntry::make('harga_satuan')->label('Harga Supplier')->money('IDR', locale: 'id'),
+                            TextEntry::make('harga_satuan')->label('Harga PO / Disepakati')->money('IDR', locale: 'id'),
+                            TextEntry::make('harga_supplier')->label('Harga Usulan Supplier')->money('IDR', locale: 'id')->placeholder('-'),
+                            TextEntry::make('status_harga')->label('Status Harga')->badge()->formatStateUsing(fn ($state) => match ($state) { 'belum_dikonfirmasi' => 'Belum Dikonfirmasi', 'sesuai' => 'Sesuai', 'berubah' => 'Berubah', 'disetujui' => 'Disetujui', 'ditolak' => 'Ditolak', default => $state, })->color(fn ($state) => match ($state) { 'sesuai', 'disetujui' => 'success', 'berubah' => 'warning', 'ditolak' => 'danger', default => 'gray', }),
                             TextEntry::make('jumlah_diterima')->label('Sudah Diterima')->numeric(),
                             TextEntry::make('sisa_diterima')->label('Sisa Diterima')->numeric(),
                         ])->columns(3),
@@ -120,6 +127,7 @@ class PembelianObatInfolist
                         }),
                     TextEntry::make('status_pembayaran')
                         ->label('Pembayaran')
+                        ->visible(fn () => auth()->user()?->role !== 'supplier')
                         ->badge()
                         ->formatStateUsing(fn ($state) => match ($state) {
                             'belum_dibayar' => 'Belum Dibayar',
@@ -137,6 +145,15 @@ class PembelianObatInfolist
                         ->label('Item Lengkap')
                         ->formatStateUsing(fn ($state, $record) => $state . ' / ' . $record->total_item . ' item'),
                 ])->columns(3),
+
+            Section::make('Konfirmasi Supplier')
+                ->description('Catatan dan respons supplier terhadap PO.')
+                ->icon('heroicon-o-chat-bubble-left-right')
+                ->schema([
+                    TextEntry::make('supplier_dikonfirmasi_at')->label('Dikonfirmasi Supplier')->dateTime('d M Y, H:i')->placeholder('Belum dikonfirmasi'),
+                    TextEntry::make('supplier_catatan')->label('Catatan Supplier')->placeholder('-')->columnSpan(2),
+                    TextEntry::make('alasan_penolakan_supplier')->label('Alasan Penolakan Supplier')->placeholder('-')->columnSpan(2),
+                ])->columns(2),
 
             Section::make('Informasi Sistem')
                 ->icon('heroicon-o-clock')

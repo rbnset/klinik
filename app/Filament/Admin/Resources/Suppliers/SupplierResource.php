@@ -14,6 +14,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class SupplierResource extends Resource
 {
@@ -28,6 +29,19 @@ class SupplierResource extends Resource
     protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'nama_supplier';
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user?->role === 'supplier') {
+            $query->where('id_pengguna', $user->id);
+        }
+
+        return $query;
+    }
 
     public static function form(Schema $schema): Schema
     {

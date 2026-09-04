@@ -11,7 +11,10 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Forms\Components\Textarea;
+use App\Notifications\PengajuanSupplierDiperbarui;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Gate;
 
 class SuppliersTable
 {
@@ -61,9 +64,16 @@ class SuppliersTable
                         ->requiresConfirmation()
                         ->modalHeading('Setujui akun supplier?')
                         ->modalDescription('Supplier akan dapat mengakses sistem setelah pengajuan disetujui.')
-                        ->visible(fn ($record): bool => $record->status_pengajuan === 'menunggu')
+                        ->visible(fn ($record): bool => auth()->user()?->role === 'admin' && $record->status_pengajuan === 'menunggu')
                         ->action(function ($record): void {
-                            $record->update(['status_pengajuan' => 'disetujui']);
+                            Gate::authorize('update', $record);
+                            $record->update([
+                                'status_pengajuan' => 'disetujui',
+                                'alasan_penolakan' => null,
+                                'ditolak_at' => null,
+                                'pengajuan_dapat_diajukan_lagi_at' => null,
+                            ]);
+                            $record->pengguna?->notify(new PengajuanSupplierDiperbarui($record, 'disetujui'));
                             Notification::make()->title('Pengajuan supplier disetujui')->success()->send();
                         }),
                     Action::make('tolak')
@@ -72,16 +82,34 @@ class SuppliersTable
                         ->color('danger')
                         ->requiresConfirmation()
                         ->modalHeading('Tolak pengajuan supplier?')
-                        ->modalDescription('Akun supplier tidak dapat masuk selama status pengajuan ditolak.')
-                        ->visible(fn ($record): bool => $record->status_pengajuan === 'menunggu')
-                        ->action(function ($record): void {
-                            $record->update(['status_pengajuan' => 'ditolak']);
-                            Notification::make()->title('Pengajuan supplier ditolak')->danger()->send();
+                        ->modalDescription('Tuliskan alasan yang dapat dipahami supplier. Alasan ini akan ditampilkan saat supplier mencoba masuk.')
+                        ->form([
+                            Textarea::make('alasan_penolakan')
+                                ->label('Alasan Penolakan')
+                                ->placeholder('Contoh: Dokumen legalitas perusahaan belum lengkap.')
+                                ->required()
+                                ->rows(4)
+                                ->maxLength(1000),
+                        ])
+                        ->visible(fn ($record): bool => auth()->user()?->role === 'admin' && $record->status_pengajuan === 'menunggu')
+                        ->action(function ($record, array $data): void {
+                            Gate::authorize('update', $record);
+                            $reason = trim((string) ($data['alasan_penolakan'] ?? ''));
+                            $record->update([
+                                'status_pengajuan' => 'ditolak',
+                                'alasan_penolakan' => $reason,
+                                'ditolak_at' => now(),
+                                'pengajuan_dapat_diajukan_lagi_at' => now()->addDays(3),
+                            ]);
+                            $record->pengguna?->notify(new PengajuanSupplierDiperbarui($record, 'ditolak'));
+                            Notification::make()->title('Pengajuan supplier ditolak')->body('Supplier dapat melihat alasan penolakan dan waktu pengajuan ulang saat login.')->danger()->send();
                         }),
                 ])->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([DeleteBulkAction::make()]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ])->visible(fn (): bool => auth()->user()?->role === 'admin'),
             ]);
     }
 }

@@ -9,11 +9,13 @@ use App\Models\PenyesuaianStok;
 use App\Models\RiwayatStok;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class PdfController extends Controller
 {
     public function pembelian(PembelianObat $pembelian): Response
     {
+        Gate::authorize('view', $pembelian);
         $pembelian->load(['supplier', 'pengguna', 'detail_pembelian.obat']);
 
         return $this->render('pdf.pembelian', [
@@ -24,6 +26,7 @@ class PdfController extends Controller
 
     public function penerimaan(PenerimaanObat $penerimaan): Response
     {
+        Gate::authorize('view', $penerimaan);
         $penerimaan->load([
             'pembelian_obat.supplier',
             'detail_penerimaan.detail_pembelian.obat',
@@ -37,6 +40,7 @@ class PdfController extends Controller
 
     public function pembayaran(Pembayaran $pembayaran): Response
     {
+        Gate::authorize('view', $pembayaran);
         $pembayaran->load(['pembelian_obat.supplier']);
 
         return $this->render('pdf.pembayaran', [
@@ -47,6 +51,7 @@ class PdfController extends Controller
 
     public function penyesuaian(PenyesuaianStok $penyesuaian): Response
     {
+        Gate::authorize('view', $penyesuaian);
         $penyesuaian->load(['obat', 'pengguna']);
 
         return $this->render('pdf.penyesuaian', [
@@ -57,6 +62,7 @@ class PdfController extends Controller
 
     public function riwayatStok(RiwayatStok $riwayat): Response
     {
+        Gate::authorize('view', $riwayat);
         $riwayat->load('obat');
 
         return $this->render('pdf.riwayat-stok', [

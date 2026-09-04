@@ -16,13 +16,43 @@ class QuickActionsWidget extends Widget
 
     protected function getViewData(): array
     {
-        return [
-            'actions' => [
-                ['label' => 'Ajukan Permintaan', 'description' => 'Buat permintaan obat internal.', 'icon' => 'clipboard-document-list', 'url' => PermintaanObatResource::getUrl('create')],
-                ['label' => 'Buat PO', 'description' => 'Buat pemesanan kepada supplier.', 'icon' => 'shopping-cart', 'url' => PembelianObatResource::getUrl('create')],
-                ['label' => 'Catat Penerimaan', 'description' => 'Terima barang dan posting stok.', 'icon' => 'inbox-arrow-down', 'url' => PenerimaanObatResource::getUrl('create')],
-                ['label' => 'Katalog Obat', 'description' => 'Cek stok dan harga terakhir.', 'icon' => 'beaker', 'url' => ObatResource::getUrl()],
-            ],
-        ];
+        $role = auth()->user()?->role;
+
+        $actions = [];
+
+        if (in_array($role, ['admin', 'karyawan', 'bidan'], true)) {
+            $actions[] = [
+                'label' => 'Ajukan Permintaan',
+                'description' => 'Buat permintaan obat internal.',
+                'icon' => 'clipboard-document-list',
+                'url' => PermintaanObatResource::getUrl('create'),
+            ];
+        }
+
+        if (in_array($role, ['admin', 'karyawan'], true)) {
+            $actions[] = [
+                'label' => 'Buat PO',
+                'description' => 'Buat pemesanan kepada supplier.',
+                'icon' => 'shopping-cart',
+                'url' => PembelianObatResource::getUrl('create'),
+            ];
+            $actions[] = [
+                'label' => 'Catat Penerimaan',
+                'description' => 'Terima barang dan posting stok.',
+                'icon' => 'inbox-arrow-down',
+                'url' => PenerimaanObatResource::getUrl('create'),
+            ];
+        }
+
+        if (in_array($role, ['admin', 'karyawan', 'bidan', 'pemilik'], true)) {
+            $actions[] = [
+                'label' => 'Katalog Obat',
+                'description' => 'Cek stok obat.',
+                'icon' => 'beaker',
+                'url' => ObatResource::getUrl(),
+            ];
+        }
+
+        return ['actions' => $actions];
     }
 }

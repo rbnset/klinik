@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,30 @@ class AdminLoginController extends Controller
             ]);
         }
 
+        $account = User::where('email', $email)->with('supplier')->first();
+
+        if ($account?->role === 'supplier') {
+            $supplier = $account->supplier;
+
+            if ($supplier?->status_pengajuan === 'menunggu') {
+                throw ValidationException::withMessages([
+                    'email' => 'Pengajuan akun supplier Anda masih menunggu verifikasi admin. Silakan coba lagi setelah mendapatkan persetujuan.',
+                ]);
+            }
+
+            if ($supplier?->status_pengajuan === 'ditolak') {
+                $reason = $supplier->alasan_penolakan ?: 'Alasan penolakan belum dicatat oleh admin.';
+                $allowedAt = $supplier->pengajuan_dapat_diajukan_lagi_at;
+                $followUp = $allowedAt && now()->lt($allowedAt)
+                    ? ' Anda dapat mengajukan kembali mulai ' . $allowedAt->translatedFormat('d F Y, H:i') . '.'
+                    : ' Anda sudah dapat mengajukan kembali melalui halaman pendaftaran supplier.';
+
+                throw ValidationException::withMessages([
+                    'email' => 'Pengajuan akun supplier ditolak. Alasan: ' . $reason . $followUp,
+                ]);
+            }
+        }
+
         $remember = $request->boolean('remember');
 
         if (! Filament::auth()->attempt([
@@ -49,7 +74,6 @@ class AdminLoginController extends Controller
         $user = Filament::auth()->user();
         $panel = Filament::getCurrentOrDefaultPanel();
 
-        // Pastikan user yang berhasil autentikasi memang berhak masuk panel admin.
         if (! $user || ! $user->canAccessPanel($panel)) {
             Filament::auth()->logout();
             $request->session()->invalidate();
@@ -63,7 +87,6 @@ class AdminLoginController extends Controller
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
-        // Redirect HTTP biasa, bukan Livewire redirect.
         return redirect()->intended(Filament::getUrl());
     }
 }

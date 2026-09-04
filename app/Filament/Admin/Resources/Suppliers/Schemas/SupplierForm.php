@@ -35,7 +35,15 @@ class SupplierForm
                         ])
                         ->required()
                         ->native(false),
-                ]),
+                    Textarea::make('alasan_penolakan')
+                        ->label('Alasan Penolakan')
+                        ->placeholder('Jelaskan alasan penolakan...')
+                        ->rows(3)
+                        ->maxLength(1000)
+                        ->required(fn ($get): bool => $get('status_pengajuan') === 'ditolak')
+                        ->visible(fn ($get): bool => $get('status_pengajuan') === 'ditolak'),
+                ])
+                ->visible(fn (): bool => auth()->user()?->role === 'admin'),
 
             Section::make('Akun Portal')
                 ->description('Opsional. Tautkan akun pengguna jika supplier membutuhkan akses portal.')
@@ -47,7 +55,8 @@ class SupplierForm
                         ->searchable()
                         ->preload()
                         ->placeholder('Pilih akun pengguna (opsional)'),
-                ])->columns(2),
+                ])->columns(2)
+                ->visible(fn (): bool => auth()->user()?->role === 'admin'),
         ]);
     }
 }

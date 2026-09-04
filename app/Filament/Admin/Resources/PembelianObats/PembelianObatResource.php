@@ -14,6 +14,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Admin\Resources\PembelianObats\RelationManagers\PenerimaanObatRelationManager;
 use App\Filament\Admin\Resources\PembelianObats\RelationManagers\PembayaranRelationManager;
 
@@ -26,6 +27,24 @@ class PembelianObatResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $modelLabel = 'Pemesanan (PO)';
     protected static ?string $pluralModelLabel = 'Data Pemesanan';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user?->role === 'supplier') {
+            $supplierId = $user->supplier?->id;
+
+            if (! $supplierId) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->where('id_supplier', $supplierId);
+            }
+        }
+
+        return $query;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -44,6 +63,10 @@ class PembelianObatResource extends Resource
 
     public static function getRelations(): array
     {
+        if (auth()->user()?->role === 'supplier') {
+            return [];
+        }
+
         return [PenerimaanObatRelationManager::class, PembayaranRelationManager::class];
     }
 

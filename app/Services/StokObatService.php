@@ -118,6 +118,15 @@ class StokObatService
             }
 
             $penerimaan->update(['stok_diposting_at' => now()]);
+
+            $po = $penerimaan->pembelian_obat;
+            $po->load('detail_pembelian.detail_penerimaan');
+            $semuaLengkap = $po->detail_pembelian->isNotEmpty()
+                && $po->detail_pembelian->every(fn ($detail) => (int) $detail->detail_penerimaan()->sum('jumlah_diterima') >= (int) $detail->jumlah_pesan);
+
+            if ($semuaLengkap && $po->status === 'diproses') {
+                $po->update(['status' => 'selesai']);
+            }
         });
     }
 

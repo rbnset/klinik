@@ -36,12 +36,12 @@ class PermintaanObatResource extends Resource
             return $query;
         }
 
-        // Admin dan Karyawan melihat semua data
-        if (in_array($user->role, ['admin', 'karyawan'])) {
+        // Admin, Karyawan, dan Pemilik dapat melihat seluruh permintaan.
+        if (in_array($user->role, ['admin', 'karyawan', 'pemilik'], true)) {
             return $query;
         }
 
-        // Role lainnya hanya melihat miliknya sendiri
+        // Bidan hanya melihat permintaan miliknya sendiri.
         return $query->where('id_pengguna', $user->id);
     }
 

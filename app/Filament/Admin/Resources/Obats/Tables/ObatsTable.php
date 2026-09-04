@@ -55,7 +55,9 @@ class ObatsTable
                     ->state(fn ($record) => $record->harga_beli_terakhir)
                     ->money('IDR', locale: 'id')
                     ->placeholder('—')
-                    ->sortable(false),
+                    ->sortable(false)
+                    ->toggleable()
+                    ->visible(fn () => auth()->user()?->role !== 'bidan'),
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()

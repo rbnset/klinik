@@ -31,8 +31,37 @@ class User extends Authenticatable
         ];
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isKaryawan(): bool
+    {
+        return $this->role === 'karyawan';
+    }
+
+    public function isBidan(): bool
+    {
+        return $this->role === 'bidan';
+    }
+
+    public function isPemilik(): bool
+    {
+        return $this->role === 'pemilik';
+    }
+
+    public function isSupplier(): bool
+    {
+        return $this->role === 'supplier';
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
+        if (! in_array($this->role, ['admin', 'karyawan', 'bidan', 'pemilik', 'supplier'], true)) {
+            return false;
+        }
+
         if ($this->role !== 'supplier') {
             return true;
         }

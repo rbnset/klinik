@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Pages\Dashboard as BaseDashboard;
 
@@ -11,52 +11,68 @@ class Dashboard extends BaseDashboard
 {
     use HasFiltersForm;
 
-    // ✅ Hapus "string" dari return type agar kompatibel dengan parent
+    public static function canAccess(): bool
+    {
+        return auth()->check();
+    }
+
+    public function getHeading(): string
+    {
+        return auth()->user()?->role === 'supplier' ? 'Selamat Datang' : 'Dashboard';
+    }
+
+    public function getSubheading(): ?string
+    {
+        if (auth()->user()?->role === 'supplier') {
+            return 'Selamat datang di sistem pengadaan obat Klinik. Periksa pesanan yang ditujukan kepada perusahaan Anda melalui menu Pemesanan.';
+        }
+
+        return null;
+    }
+
     public function getColumns(): int | array
     {
-        return 2;
+        return auth()->user()?->role === 'supplier' ? 1 : 2;
     }
 
     public function getWidgets(): array
     {
-        return [
-            \App\Filament\Admin\Widgets\StatsOverview::class,
-            \App\Filament\Admin\Widgets\QuickActionsWidget::class,
-            \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
-            \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
-        ];
+        $role = auth()->user()?->role;
+
+        return match ($role) {
+            'admin', 'karyawan' => [
+                \App\Filament\Admin\Widgets\StatsOverview::class,
+                \App\Filament\Admin\Widgets\QuickActionsWidget::class,
+                \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
+                \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
+            ],
+            'pemilik' => [
+                \App\Filament\Admin\Widgets\StatsOverview::class,
+                \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
+                \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
+            ],
+            'bidan' => [\App\Filament\Admin\Widgets\QuickActionsWidget::class],
+            'supplier' => [\App\Filament\Admin\Widgets\SupplierDashboardWidget::class],
+            default => [],
+        };
     }
 
-    public function filtersForm(Form $form): Form
+    public function filtersForm(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Select::make('bulan')
-                    ->label('Filter Bulan')
-                    ->options([
-                        '01' => 'Januari',
-                        '02' => 'Februari',
-                        '03' => 'Maret',
-                        '04' => 'April',
-                        '05' => 'Mei',
-                        '06' => 'Juni',
-                        '07' => 'Juli',
-                        '08' => 'Agustus',
-                        '09' => 'September',
-                        '10' => 'Oktober',
-                        '11' => 'November',
-                        '12' => 'Desember',
-                    ])
-                    ->default(now()->format('m')),
+        if (auth()->user()?->role === 'supplier') {
+            return $schema->components([]);
+        }
 
-                Select::make('tahun')
-                    ->label('Filter Tahun')
-                    ->options(array_combine(
-                        range(now()->subYears(2)->format('Y'), now()->format('Y')),
-                        range(now()->subYears(2)->format('Y'), now()->format('Y'))
-                    ))
-                    ->default(now()->format('Y')),
-            ])
-            ->columns(2);
+        return $schema->components([
+            Select::make('bulan')->label('Filter Bulan')->options([
+                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+                '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+                '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
+            ])->default(now()->format('m')),
+            Select::make('tahun')->label('Filter Tahun')->options(array_combine(
+                range(now()->subYears(2)->format('Y'), now()->format('Y')),
+                range(now()->subYears(2)->format('Y'), now()->format('Y')),
+            ))->default(now()->format('Y')),
+        ])->columns(2);
     }
 }

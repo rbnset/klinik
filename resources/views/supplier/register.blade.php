@@ -63,7 +63,7 @@
                 @if(session('supplier_application_success'))
                     <div class="success">
                         <strong>Pengajuan akun berhasil dikirim.</strong>
-                        <p>Data Anda sudah tercatat dan menunggu pemeriksaan admin Praktek Bidan Puji Susanti. Anda belum dapat masuk sampai pengajuan disetujui.</p>
+                        <p>{{ session('supplier_application_resubmitted') ? 'Pengajuan ulang Anda sudah tercatat dan kembali menunggu pemeriksaan admin Praktek Bidan Puji Susanti.' : 'Data Anda sudah tercatat dan menunggu pemeriksaan admin Praktek Bidan Puji Susanti.' }} Anda belum dapat masuk sampai pengajuan disetujui.</p>
                         <div class="success-actions">
                             <a href="{{ route('landing') }}">Kembali ke beranda</a>
                             <a href="{{ url('/admin/login') }}">Ke halaman masuk</a>
