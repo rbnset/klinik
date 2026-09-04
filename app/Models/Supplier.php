@@ -9,6 +9,10 @@ class Supplier extends Model
     protected $table = 'supplier';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'status_pengajuan' => 'string',
+    ];
+
     public function pengguna()
     {
         return $this->belongsTo(User::class, 'id_pengguna');

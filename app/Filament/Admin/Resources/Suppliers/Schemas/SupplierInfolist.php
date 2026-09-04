@@ -20,6 +20,27 @@ class SupplierInfolist
                     TextEntry::make('alamat')->label('Alamat Lengkap')->placeholder('-')->columnSpanFull(),
                 ])->columns(2),
 
+            Section::make('Status Pengajuan')
+                ->description('Status verifikasi dan akses supplier.')
+                ->icon('heroicon-o-shield-check')
+                ->schema([
+                    TextEntry::make('status_pengajuan')
+                        ->label('Status')
+                        ->badge()
+                        ->formatStateUsing(fn (?string $state): string => match ($state) {
+                            'menunggu' => 'Menunggu Verifikasi',
+                            'disetujui' => 'Disetujui',
+                            'ditolak' => 'Ditolak',
+                            default => 'Belum Diatur',
+                        })
+                        ->color(fn (?string $state): string => match ($state) {
+                            'menunggu' => 'warning',
+                            'disetujui' => 'success',
+                            'ditolak' => 'danger',
+                            default => 'gray',
+                        }),
+                ]),
+
             Section::make('Akun Portal')
                 ->description('Akun pengguna yang ditautkan ke supplier, jika tersedia.')
                 ->icon('heroicon-o-user-circle')

@@ -68,7 +68,7 @@ class PdfController extends Controller
     private function render(string $view, array $data, string $filename): Response
     {
         $data['logo'] = $this->logoDataUri();
-        $data['clinicName'] = 'Klinik Bidan Puji Susanti';
+        $data['clinicName'] = 'KLINIK REJOSARI';
         $data['clinicAddress'] = 'Rejosari, Jogotirto, Kec. Berbah, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55573';
 
         return Pdf::loadView($view, $data)
@@ -80,8 +80,8 @@ class PdfController extends Controller
     private function logoDataUri(): ?string
     {
         $paths = [
-            public_path('images/logo.jpeg'),
-            public_path('images/logo.jpeg'),
+            public_path('images/logo.svg'),
+            public_path('images/logo.png'),
         ];
 
         foreach ($paths as $path) {

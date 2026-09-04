@@ -22,6 +22,21 @@ class SupplierForm
                     Textarea::make('alamat')->label('Alamat Lengkap')->placeholder('Masukkan alamat lengkap supplier...')->required()->rows(3)->columnSpanFull(),
                 ])->columns(2),
 
+            Section::make('Status Pengajuan')
+                ->description('Kelola status akses supplier setelah data pengajuan diperiksa.')
+                ->icon('heroicon-o-shield-check')
+                ->schema([
+                    Select::make('status_pengajuan')
+                        ->label('Status Akses')
+                        ->options([
+                            'menunggu' => 'Menunggu Verifikasi',
+                            'disetujui' => 'Disetujui',
+                            'ditolak' => 'Ditolak',
+                        ])
+                        ->required()
+                        ->native(false),
+                ]),
+
             Section::make('Akun Portal')
                 ->description('Opsional. Tautkan akun pengguna jika supplier membutuhkan akses portal.')
                 ->icon('heroicon-o-user-circle')
