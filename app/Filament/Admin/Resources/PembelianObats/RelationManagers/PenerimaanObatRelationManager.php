@@ -33,11 +33,11 @@ class PenerimaanObatRelationManager extends RelationManager
             ->emptyStateHeading('Belum ada penerimaan')
             ->emptyStateDescription('Catat penerimaan langsung dari PO ini setelah barang datang.')
             ->headerActions([
-                Action::make('catatPenerimaan')->label('Catat Penerimaan')->icon('heroicon-o-clipboard-document-check')->url(fn () => PenerimaanObatResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->status_penerimaan !== 'lengkap'),
+                Action::make('catatPenerimaan')->label('Catat Penerimaan')->icon('heroicon-o-clipboard-document-check')->url(fn () => PenerimaanObatResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => auth()->user()?->role !== 'supplier' && $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->status_penerimaan !== 'lengkap'),
             ])
             ->recordActions([ActionGroup::make([
                 ViewAction::make()->url(fn (PenerimaanObat $record) => PenerimaanObatResource::getUrl('view', ['record' => $record])),
-                EditAction::make()->url(fn (PenerimaanObat $record) => PenerimaanObatResource::getUrl('edit', ['record' => $record]))->visible(fn (PenerimaanObat $record) => ! $record->stok_diposting_at),
+                EditAction::make()->visible(fn (PenerimaanObat $record) => auth()->user()?->role !== 'supplier' && ! $record->stok_diposting_at)->url(fn (PenerimaanObat $record) => PenerimaanObatResource::getUrl('edit', ['record' => $record])),
             ])->icon('heroicon-m-ellipsis-vertical')]);
     }
 }

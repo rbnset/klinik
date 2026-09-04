@@ -63,10 +63,6 @@ class PembelianObatResource extends Resource
 
     public static function getRelations(): array
     {
-        if (auth()->user()?->role === 'supplier') {
-            return [];
-        }
-
         return [PenerimaanObatRelationManager::class, PembayaranRelationManager::class];
     }
 

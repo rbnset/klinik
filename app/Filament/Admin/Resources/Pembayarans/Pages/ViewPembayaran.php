@@ -1,26 +1,10 @@
 <?php
-
 namespace App\Filament\Admin\Resources\Pembayarans\Pages;
-
-use App\Filament\Admin\Resources\Pembayarans\PembayaranResource;
-use App\Filament\Admin\Resources\PembelianObats\PembelianObatResource;
-use Filament\Actions\EditAction;
-use Filament\Actions\Action;
-use Filament\Resources\Pages\ViewRecord;
-
-class ViewPembayaran extends ViewRecord
-{
-    protected static string $resource = PembayaranResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Action::make('lihatPo')
-                ->label('Lihat PO')
-                ->icon('heroicon-o-shopping-cart')
-                ->url(fn () => PembelianObatResource::getUrl('view', ['record' => $this->record->id_pembelian_obat])),
-            Action::make('cetakPdf')->label('Cetak Bukti')->icon('heroicon-o-printer')->url(fn () => route('admin.cetak.pembayaran', ['pembayaran' => $this->record]))->openUrlInNewTab(),
-            EditAction::make(),
-        ];
-    }
-}
+use App\Filament\Admin\Resources\Pembayarans\PembayaranResource; use App\Filament\Admin\Resources\PembelianObats\PembelianObatResource; use App\Models\Pembayaran; use App\Services\PembayaranWorkflowService; use Filament\Actions\Action; use Filament\Actions\EditAction; use Filament\Forms\Components\Textarea; use Filament\Notifications\Notification; use Filament\Resources\Pages\ViewRecord; use Illuminate\Support\Facades\Gate;
+class ViewPembayaran extends ViewRecord { protected static string $resource=PembayaranResource::class; protected function getHeaderActions():array{return [
+ Action::make('setujui')->label('Setujui Pembayaran')->icon('heroicon-o-check-circle')->color('success')->visible(fn()=>auth()->user()?->isSupplier() && $this->record->status==='menunggu_supplier')->requiresConfirmation()->modalHeading('Setujui pembayaran?')->modalDescription('Setelah disetujui, pembayaran ini akan dihitung sebagai pembayaran sah dan mengurangi sisa tagihan PO.')->modalSubmitActionLabel('Ya, Setujui')->action(function(){Gate::authorize('approveBySupplier',$this->record); app(PembayaranWorkflowService::class)->approveBySupplier($this->record,auth()->id()); Notification::make()->title('Pembayaran disetujui')->body('Pembayaran telah dikonfirmasi dan akan diperhitungkan sebagai pembayaran sah.')->success()->send(); $this->redirect(PembayaranResource::getUrl('view',['record'=>$this->record->getKey()]));}),
+ Action::make('tolak')->label('Tolak Pembayaran')->icon('heroicon-o-x-circle')->color('danger')->visible(fn()=>auth()->user()?->isSupplier() && $this->record->status==='menunggu_supplier')->form([Textarea::make('alasan')->label('Alasan Penolakan')->required()->rows(4)->maxLength(1000)])->action(function(array $data){Gate::authorize('rejectBySupplier',$this->record); app(PembayaranWorkflowService::class)->rejectBySupplier($this->record,auth()->id(),$data['alasan']); Notification::make()->title('Pembayaran ditolak')->body('Gudang telah menerima alasan penolakan.')->warning()->send(); $this->redirect(PembayaranResource::getUrl('view',['record'=>$this->record->getKey()]));}),
+ Action::make('lihatPo')->label('Lihat PO')->icon('heroicon-o-shopping-cart')->url(fn()=>PembelianObatResource::getUrl('view',['record'=>$this->record->id_pembelian_obat])),
+ Action::make('cetakPdf')->label('Cetak Bukti')->icon('heroicon-o-printer')->url(fn()=>route('admin.cetak.pembayaran',['pembayaran'=>$this->record]))->openUrlInNewTab(),
+ EditAction::make()->visible(fn()=>auth()->user()?->role!=='supplier' && $this->record->status!=='disetujui_supplier'),
+ ];}}

@@ -14,6 +14,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PenerimaanObatResource extends Resource
 {
@@ -22,6 +23,17 @@ class PenerimaanObatResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'PENGADAAN BARANG';
     protected static ?int $navigationSort = 2;
     protected static ?string $modelLabel = 'Penerimaan & Faktur';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery()->with('pembelian_obat.supplier');
+        $user = auth()->user();
+        if ($user?->isSupplier()) {
+            $supplierId = $user->supplier?->id;
+            $query->whereHas('pembelian_obat', fn (Builder $q) => $q->where('id_supplier', $supplierId ?: 0));
+        }
+        return $query;
+    }
 
     public static function form(Schema $schema): Schema
     {

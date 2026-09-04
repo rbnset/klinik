@@ -28,15 +28,16 @@ class PembayaranRelationManager extends RelationManager
                 TextColumn::make('tanggal_bayar')->label('Tanggal Bayar')->date('d M Y')->sortable(),
                 TextColumn::make('metode_pembayaran')->label('Metode')->badge()->formatStateUsing(fn ($state) => ucfirst($state)),
                 TextColumn::make('total_bayar')->label('Jumlah Bayar')->money('IDR', locale: 'id')->sortable(),
+                TextColumn::make('status')->label('Status')->badge()->formatStateUsing(fn ($state) => match ($state) { 'menunggu_supplier' => 'Menunggu Supplier', 'disetujui_supplier' => 'Disetujui Supplier', 'ditolak_supplier' => 'Ditolak Supplier', default => ucfirst((string) $state), })->color(fn ($state) => $state === 'disetujui_supplier' ? 'success' : ($state === 'ditolak_supplier' ? 'danger' : 'warning')),
             ])
             ->emptyStateHeading('Belum ada pembayaran')
             ->emptyStateDescription('Catat pembayaran dari PO ini. Sistem akan menghitung sisa tagihan otomatis.')
             ->headerActions([
-                Action::make('catatPembayaran')->label('Catat Pembayaran')->icon('heroicon-o-banknotes')->url(fn () => PembayaranResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->sisa_tagihan > 0),
+                Action::make('catatPembayaran')->label('Catat Pembayaran')->icon('heroicon-o-banknotes')->url(fn () => PembayaranResource::getUrl('create', ['pembelian' => $this->getOwnerRecord()->getKey()]))->visible(fn () => auth()->user()?->role !== 'supplier' && $this->getOwnerRecord()->status !== 'dibatalkan' && $this->getOwnerRecord()->sisa_tagihan > 0),
             ])
             ->recordActions([ActionGroup::make([
                 ViewAction::make()->url(fn (Pembayaran $record) => PembayaranResource::getUrl('view', ['record' => $record])),
-                EditAction::make()->url(fn (Pembayaran $record) => PembayaranResource::getUrl('edit', ['record' => $record])),
+                EditAction::make()->visible(fn () => auth()->user()?->role !== 'supplier')->url(fn (Pembayaran $record) => PembayaranResource::getUrl('edit', ['record' => $record])),
             ])->icon('heroicon-m-ellipsis-vertical')]);
     }
 }

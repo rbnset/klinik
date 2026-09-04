@@ -22,7 +22,7 @@ class PembelianObat extends Model
 
     public function getTotalDibayarAttribute(): int
     {
-        return (int) $this->pembayaran()->sum('total_bayar');
+        return (int) $this->pembayaran()->where('status', 'disetujui_supplier')->sum('total_bayar');
     }
 
     public function getSisaTagihanAttribute(): int

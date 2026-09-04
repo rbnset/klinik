@@ -18,13 +18,16 @@ class Dashboard extends BaseDashboard
 
     public function getHeading(): string
     {
-        return auth()->user()?->role === 'supplier' ? 'Selamat Datang' : 'Dashboard';
+        return match (auth()->user()?->role) { 'supplier' => 'Portal Supplier', 'karyawan' => 'Dashboard Gudang', default => 'Dashboard', };
     }
 
     public function getSubheading(): ?string
     {
         if (auth()->user()?->role === 'supplier') {
-            return 'Selamat datang di sistem pengadaan obat Klinik. Periksa pesanan yang ditujukan kepada perusahaan Anda melalui menu Pemesanan.';
+            return 'Kelola pesanan, konfirmasi harga, dan pantau proses pengadaan Anda.';
+        }
+        if (auth()->user()?->role === 'karyawan') {
+            return 'Pusat kendali operasional gudang dan pengadaan obat.';
         }
 
         return null;
@@ -32,7 +35,7 @@ class Dashboard extends BaseDashboard
 
     public function getColumns(): int | array
     {
-        return auth()->user()?->role === 'supplier' ? 1 : 2;
+        return in_array(auth()->user()?->role, ['supplier', 'karyawan'], true) ? 1 : 2;
     }
 
     public function getWidgets(): array
@@ -40,12 +43,13 @@ class Dashboard extends BaseDashboard
         $role = auth()->user()?->role;
 
         return match ($role) {
-            'admin', 'karyawan' => [
+            'admin' => [
                 \App\Filament\Admin\Widgets\StatsOverview::class,
                 \App\Filament\Admin\Widgets\QuickActionsWidget::class,
                 \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
                 \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
             ],
+            'karyawan' => [\App\Filament\Admin\Widgets\WarehouseDashboardWidget::class],
             'pemilik' => [
                 \App\Filament\Admin\Widgets\StatsOverview::class,
                 \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
@@ -59,7 +63,7 @@ class Dashboard extends BaseDashboard
 
     public function filtersForm(Schema $schema): Schema
     {
-        if (auth()->user()?->role === 'supplier') {
+        if (in_array(auth()->user()?->role, ['supplier', 'karyawan'], true)) {
             return $schema->components([]);
         }
 
