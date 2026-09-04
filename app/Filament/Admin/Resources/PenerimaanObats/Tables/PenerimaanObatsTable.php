@@ -3,13 +3,18 @@
 namespace App\Filament\Admin\Resources\PenerimaanObats\Tables;
 
 use App\Models\PenerimaanObat;
+use App\Models\Supplier;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PenerimaanObatsTable
 {
@@ -24,7 +29,17 @@ class PenerimaanObatsTable
                 TextColumn::make('stok_diposting_at')->label('Status Stok')->badge()->formatStateUsing(fn ($state) => $state ? 'Diposting' : 'Belum Diposting')->color(fn ($state) => $state ? 'success' : 'warning'),
             ])
             ->defaultSort('tanggal_terima', 'desc')
-            ->filters([SelectFilter::make('stok_diposting_at')->label('Status Stok')->options(['1'=>'Sudah Diposting','0'=>'Belum Diposting'])->query(function ($query, array $data) { if (($data['value'] ?? null) === '1') $query->whereNotNull('stok_diposting_at'); if (($data['value'] ?? null) === '0') $query->whereNull('stok_diposting_at'); })])
+            ->filters([
+                SelectFilter::make('stok_diposting_at')->label('Status Stok')->options(['1'=>'Sudah Diposting','0'=>'Belum Diposting'])->query(function ($query, array $data) { if (($data['value'] ?? null) === '1') $query->whereNotNull('stok_diposting_at'); if (($data['value'] ?? null) === '0') $query->whereNull('stok_diposting_at'); }),
+                Filter::make('supplier')->label('Supplier')->form([
+                    Select::make('id_supplier')->label('Supplier')->options(fn () => Supplier::query()->orderBy('nama_supplier')->pluck('nama_supplier', 'id'))->searchable()->preload(),
+                ])->query(fn (Builder $query, array $data) => $query->when($data['id_supplier'] ?? null, fn ($q, $supplierId) => $q->whereHas('pembelian_obat', fn ($po) => $po->where('id_supplier', $supplierId)))),
+                Filter::make('periode')->label('Periode Terima')->form([
+                    DatePicker::make('dari')->label('Dari'), DatePicker::make('sampai')->label('Sampai'),
+                ])->columns(2)->query(fn (Builder $query, array $data) => $query
+                    ->when($data['dari'] ?? null, fn ($q, $date) => $q->whereDate('tanggal_terima', '>=', $date))
+                    ->when($data['sampai'] ?? null, fn ($q, $date) => $q->whereDate('tanggal_terima', '<=', $date))),
+            ])
             ->emptyStateHeading('Belum ada penerimaan')
             ->emptyStateDescription('Penerimaan barang dari supplier akan tampil di sini.')
             ->striped()

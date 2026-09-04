@@ -68,8 +68,14 @@ class StokObatService
 
             $penerimaan->load('detail_penerimaan.detail_pembelian.obat', 'pembelian_obat');
 
-            if ($penerimaan->pembelian_obat?->status === 'dibatalkan') {
-                throw ValidationException::withMessages(['id_pembelian_obat' => 'PO yang dibatalkan tidak dapat menerima barang.']);
+            $po = $penerimaan->pembelian_obat;
+
+            if (! $po) {
+                throw ValidationException::withMessages(['id_pembelian_obat' => 'PO penerimaan tidak ditemukan.']);
+            }
+
+            if ($po->status !== 'diproses') {
+                throw ValidationException::withMessages(['id_pembelian_obat' => 'Penerimaan hanya dapat dicatat untuk PO berstatus Diproses.']);
             }
 
             if ($penerimaan->detail_penerimaan->isEmpty()) {
@@ -100,9 +106,11 @@ class StokObatService
                     ->where('id', '!=', $detail->id)
                     ->sum('jumlah_diterima');
 
-                if (($sudahDiterima + $jumlah) > $jumlahPesan) {
+                $sisa = max(0, $jumlahPesan - $sudahDiterima);
+
+                if ($jumlah > $sisa) {
                     throw ValidationException::withMessages([
-                        'detail_penerimaan' => "Jumlah diterima {$detailPembelian->obat->nama_obat} melebihi jumlah yang dipesan.",
+                        'detail_penerimaan' => "Jumlah diterima {$detailPembelian->obat->nama_obat} melebihi sisa yang belum diterima ({$sisa} {$detailPembelian->obat->satuan}).",
                     ]);
                 }
 
