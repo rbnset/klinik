@@ -170,6 +170,8 @@
         .org-placeholder { min-height:300px; display:grid; place-items:center; color:var(--muted); text-align:center; padding:30px; }
 
         .location { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+        .map-embed { min-height:250px; overflow:hidden; border-radius:18px; background:var(--surface-soft); border:1px solid var(--border); box-shadow:0 12px 35px rgba(16,24,40,.07); aspect-ratio:16 / 9; }
+        .map-embed iframe { display:block; width:100%; height:100%; border:0; }
         .address-box { min-height:250px; display:flex; flex-direction:column; justify-content:space-between; }
         .address-text { font-size:21px; line-height:1.45; font-weight:800; letter-spacing:-.025em; }
         .permit { color:var(--muted); font-size:12px; margin-top:10px; }
@@ -211,6 +213,7 @@
             .cta { flex-direction:column; align-items:flex-start; padding:24px; }
             .footer-grid { flex-direction:column; }
             .hero-actions .btn { width:100%; }
+            .map-embed { aspect-ratio:4 / 3; min-height:0; }
         }
     </style>
 </head>
@@ -456,9 +459,17 @@
                             <div class="address-text">Karongan RT.03 / RW.11, Jogotirto, Kecamatan Berbah, Kabupaten Sleman, Daerah Istimewa Yogyakarta.</div>
                             <div class="permit">Nomor Izin Usaha: 446/3280/7201/III-25</div>
                         </div>
-                        <div style="margin-top:24px"><a class="btn btn-secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Karongan%20RT.03%20RW.11%20Jogotirto%20Berbah%20Sleman">Buka di Google Maps ↗</a></div>
+                        <div style="margin-top:24px"><a class="btn btn-secondary" target="_blank" rel="noopener" href="https://maps.app.goo.gl/o2nVGunrBZ4HiecX7">Buka di Google Maps ↗</a></div>
                     </article>
-                    <div class="map-placeholder"><div><strong>Praktek Bidan Puji Susanti</strong><br>Karongan, Jogotirto, Kecamatan Berbah, Kabupaten Sleman, DIY<br><span style="font-size:11px">Gunakan tombol di samping untuk membuka petunjuk lokasi.</span></div></div>
+                    <div class="map-embed" aria-label="Peta lokasi Praktek Bidan Puji Susanti">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.7345140651987!2d110.4657622008882!3d-7.817901239116243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a514c87aacc39%3A0xab18954e3873018!2sPraktek%20Bidan%20Puji%20Susanti!5e0!3m2!1sid!2sid!4v1788494283777!5m2!1sid!2sid"
+                            title="Peta lokasi Praktek Bidan Puji Susanti"
+                            loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen
+                        ></iframe>
+                    </div>
                 </div>
             </div>
         </section>
