@@ -110,7 +110,7 @@ class PenerimaanObatForm
                         ->label('Tanggal Terima')
                         ->default(now())
                         ->required(),
-                ])->columns(3)
+                ])->columns(1)
                 ->columnSpanFull(),
 
             Section::make('Pengecekan Fisik')
@@ -200,7 +200,7 @@ class PenerimaanObatForm
                             \Filament\Forms\Components\Hidden::make('satuan')->dehydrated(false),
                         ])
                         ->default(self::buildRows($poId ? (int) $poId : null))
-                        ->columns(6)
+                        ->columns(1)
                         ->addable(false)
                         ->deletable(false)
                         ->reorderable(false)
@@ -208,6 +208,6 @@ class PenerimaanObatForm
                         ->visible(fn (Get $get): bool => filled($get('id_pembelian_obat')) || filled(request()->query('pembelian'))),
                 ])
                 ->columnSpanFull(),
-        ]);
+        ])->columns(1);
     }
 }

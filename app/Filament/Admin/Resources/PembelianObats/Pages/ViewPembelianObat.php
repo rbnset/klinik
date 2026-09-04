@@ -154,6 +154,13 @@ class ViewPembelianObat extends ViewRecord
                 ->visible(fn () => auth()->user()?->role !== 'supplier' && in_array($this->record->status, ['diproses', 'selesai'], true) && $this->record->sisa_tagihan > 0),
             Action::make('cetakPdf')->label('Cetak PO')->icon('heroicon-o-printer')
                 ->url(fn () => route('admin.cetak.pembelian', ['pembelian' => $this->record]))->openUrlInNewTab(),
+            Action::make('cetakRingkasanLengkap')
+                ->label('Cetak Ringkasan Pengadaan Lengkap')
+                ->icon('heroicon-o-document-chart-bar')
+                ->color('success')
+                ->visible(fn () => $this->record->status === 'selesai' && $this->record->status_pembayaran === 'lunas')
+                ->url(fn () => route('admin.cetak.pembelian.ringkasan', ['pembelian' => $this->record]))
+                ->openUrlInNewTab(),
             EditAction::make()
                 ->visible(fn () => auth()->user()?->role !== 'supplier' && $this->record->status === 'pending' && ! $this->record->supplier_dikonfirmasi_at && ! $this->record->penerimaan_obat()->exists() && ! $this->record->pembayaran()->exists()),
         ];

@@ -4,6 +4,8 @@ namespace App\Notifications;
 
 use App\Models\PermintaanObat;
 use App\Models\User;
+use App\Filament\Admin\Resources\PermintaanObats\PermintaanObatResource;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -31,6 +33,7 @@ class PermintaanObatDibuat extends Notification
             )
             ->icon('heroicon-o-inbox-arrow-down')
             ->iconColor('warning')
+            ->actions([Action::make('lihat')->label('Tinjau Permintaan')->url(PermintaanObatResource::getUrl('view', ['record' => $this->permintaan->getKey()]))])
             ->getDatabaseMessage();
     }
 }

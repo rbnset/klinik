@@ -24,6 +24,23 @@ class PdfController extends Controller
         ], 'PO-' . str_pad((string) $pembelian->id, 5, '0', STR_PAD_LEFT) . '.pdf');
     }
 
+    public function ringkasanPembelian(PembelianObat $pembelian): Response
+    {
+        Gate::authorize('view', $pembelian);
+        $pembelian->load([
+            'supplier',
+            'pengguna',
+            'detail_pembelian.obat',
+            'penerimaan_obat.detail_penerimaan.detail_pembelian.obat',
+            'pembayaran',
+        ]);
+
+        return $this->render('pdf.pembelian-ringkasan', [
+            'title' => 'Ringkasan Proses Pengadaan',
+            'pembelian' => $pembelian,
+        ], 'PO-' . str_pad((string) $pembelian->id, 5, '0', STR_PAD_LEFT) . '-RINGKASAN-LENGKAP.pdf');
+    }
+
     public function penerimaan(PenerimaanObat $penerimaan): Response
     {
         Gate::authorize('view', $penerimaan);

@@ -55,7 +55,7 @@ class Dashboard extends BaseDashboard
                 \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
                 \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
             ],
-            'bidan' => [\App\Filament\Admin\Widgets\QuickActionsWidget::class],
+            'bidan' => [\App\Filament\Admin\Widgets\BidanDashboardWidget::class],
             'supplier' => [\App\Filament\Admin\Widgets\SupplierDashboardWidget::class],
             default => [],
         };
@@ -63,7 +63,7 @@ class Dashboard extends BaseDashboard
 
     public function filtersForm(Schema $schema): Schema
     {
-        if (in_array(auth()->user()?->role, ['supplier', 'karyawan'], true)) {
+        if (in_array(auth()->user()?->role, ['supplier', 'karyawan', 'bidan'], true)) {
             return $schema->components([]);
         }
 

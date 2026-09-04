@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use App\Models\KategoriObat;
 use App\Models\Obat;
 use App\Models\PembelianObat;
@@ -30,6 +31,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Carbon::setLocale('id');
+
+        // Endpoint PDF pengadaan. Didaftarkan terpusat agar action Filament
+        // dapat menggunakan named route yang konsisten tanpa bergantung pada
+        // file routes/web.php yang berbeda antar instalasi.
+        Route::middleware(['web', 'auth'])->group(function (): void {
+            Route::get('/admin/cetak/pembelian/{pembelian}', [\App\Http\Controllers\PdfController::class, 'pembelian'])
+                ->name('admin.cetak.pembelian');
+            Route::get('/admin/cetak/pembelian/{pembelian}/ringkasan', [\App\Http\Controllers\PdfController::class, 'ringkasanPembelian'])
+                ->name('admin.cetak.pembelian.ringkasan');
+        });
 
         // Daftarkan policy secara eksplisit agar hak akses Filament
         // selalu konsisten pada setiap environment/deployment.

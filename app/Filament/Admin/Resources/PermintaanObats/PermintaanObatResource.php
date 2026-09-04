@@ -84,7 +84,6 @@ class PermintaanObatResource extends Resource
         }
 
         return $user->role === 'admin'
-            || $user->role === 'karyawan'
             || ($user->role === 'bidan' && $record->id_pengguna === $user->id);
     }
 

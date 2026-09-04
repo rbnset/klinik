@@ -30,6 +30,9 @@
         .space { height: 58px; }
         .muted { color: #6b7280; }
         .badge { font-weight: 700; }
+        h2 { margin: 22px 0 8px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #d1d5db; padding-bottom: 5px; }
+        .subheading { margin: 13px 0 5px; font-weight: 700; font-size: 9px; }
+        .compact td, .compact th { padding: 5px; }
     </style>
 </head>
 <body>

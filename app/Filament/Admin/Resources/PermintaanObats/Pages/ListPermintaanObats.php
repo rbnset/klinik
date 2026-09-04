@@ -42,7 +42,6 @@ class ListPermintaanObats extends ListRecords
     public function getTabs(): array
     {
         $user = auth()->user();
-
         $baseQuery = \App\Models\PermintaanObat::query();
 
         if ($user->role === 'bidan') {
@@ -50,49 +49,16 @@ class ListPermintaanObats extends ListRecords
         }
 
         return [
-
-            'semua' => Tab::make('Semua')
-                ->badge((clone $baseQuery)->count()),
-
-            'pending' => Tab::make('Pending')
-                ->badge(
-                    (clone $baseQuery)
-                        ->where('status', 'pending')
-                        ->count()
-                )
-                ->modifyQueryUsing(
-                    fn($query) => $query->where('status', 'pending')
-                ),
-
-            'disetujui' => Tab::make('Disetujui')
-                ->badge(
-                    (clone $baseQuery)
-                        ->where('status', 'disetujui')
-                        ->count()
-                )
-                ->modifyQueryUsing(
-                    fn($query) => $query->where('status', 'disetujui')
-                ),
-
-            'ditolak' => Tab::make('Ditolak')
-                ->badge(
-                    (clone $baseQuery)
-                        ->where('status', 'ditolak')
-                        ->count()
-                )
-                ->modifyQueryUsing(
-                    fn($query) => $query->where('status', 'ditolak')
-                ),
-
-            'dibatalkan' => Tab::make('Dibatalkan')
-                ->badge(
-                    (clone $baseQuery)
-                        ->where('status', 'dibatalkan')
-                        ->count()
-                )
-                ->modifyQueryUsing(
-                    fn($query) => $query->where('status', 'dibatalkan')
-                ),
+            'semua' => Tab::make('Semua')->badge((clone $baseQuery)->count()),
+            'perlu_tindakan' => Tab::make('Perlu Tindakan')
+                ->badge((clone $baseQuery)->where('status', 'pending')->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('status', 'pending')),
+            'proses' => Tab::make('Dalam Proses')
+                ->badge((clone $baseQuery)->whereIn('status', ['disetujui', 'diserahkan'])->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', ['disetujui', 'diserahkan'])),
+            'selesai' => Tab::make('Selesai')
+                ->badge((clone $baseQuery)->where('status', 'selesai')->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('status', 'selesai')),
         ];
     }
 }

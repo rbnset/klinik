@@ -2,19 +2,15 @@
 
 namespace App\Filament\Admin\Resources\Obats\Schemas;
 
-use App\Filament\Admin\Resources\RiwayatStoks\RiwayatStokResource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class ObatForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $stokUrl = RiwayatStokResource::getUrl('index');
-
         return $schema->components([
             Section::make('Identitas Obat')
                 ->description('Data identitas tetap obat. Harga pembelian dicatat pada transaksi pembelian, bukan di master obat.')
@@ -55,7 +51,7 @@ class ObatForm
                         ->default(0)
                         ->disabled()
                         ->dehydrated(false)
-                        ->helperText(new HtmlString('Stok dikelola otomatis. Lihat <a class="font-medium text-primary-600 underline" href="' . e($stokUrl) . '">Riwayat Stok</a> untuk audit.')),
+                        ->helperText('Stok dikelola otomatis dari penerimaan, permintaan internal, dan penyesuaian stok. Riwayat transaksi dapat ditelusuri dari dokumen sumber terkait.'),
                     TextInput::make('harga_beli_terakhir_display')
                         ->label('Harga Beli Terakhir')
                         ->prefix('Rp')

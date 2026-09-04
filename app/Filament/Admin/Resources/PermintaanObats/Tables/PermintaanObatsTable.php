@@ -41,13 +41,17 @@ class PermintaanObatsTable
                     ->badge()
                     ->formatStateUsing(fn(string $state): string => match ($state) {
                         'pending'   => 'Pending',
-                        'disetujui' => 'Disetujui',
+                        'disetujui' => 'Disetujui · Siap Diserahkan',
+                        'diserahkan' => 'Menunggu Konfirmasi Bidan',
+                        'selesai' => 'Selesai',
                         'ditolak'   => 'Ditolak',
                         default     => ucfirst($state),
                     })
                     ->color(fn(string $state): string => match ($state) {
                         'pending'   => 'warning',
-                        'disetujui' => 'success',
+                        'disetujui' => 'info',
+                        'diserahkan' => 'warning',
+                        'selesai' => 'success',
                         'ditolak'   => 'danger',
                         default     => 'gray',
                     }),
@@ -60,7 +64,7 @@ class PermintaanObatsTable
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
-            ->filters([SelectFilter::make('status')->label('Status')->options(['pending'=>'Pending','disetujui'=>'Disetujui','ditolak'=>'Ditolak','dibatalkan'=>'Dibatalkan'])])
+            ->filters([SelectFilter::make('status')->label('Status')->options(['pending'=>'Pending','disetujui'=>'Disetujui','diserahkan'=>'Diserahkan','selesai'=>'Selesai','ditolak'=>'Ditolak','dibatalkan'=>'Dibatalkan'])])
             ->emptyStateHeading('Belum ada permintaan')
             ->emptyStateDescription('Permintaan internal obat akan tampil di sini.')
             ->recordActions([
@@ -69,20 +73,17 @@ class PermintaanObatsTable
 
                         $user = auth()->user();
 
-                        // Karyawan hanya boleh edit permintaan pending
+                        // Gudang tidak mengubah data permintaan melalui Edit.
                         if ($user->role === 'karyawan') {
-                            return $record->status === 'pending';
+                            return false;
                         }
 
-                        // Bidan hanya boleh edit miliknya sendiri dan pending
                         if ($user->role === 'bidan') {
-                            return
-                                $record->id_pengguna === $user->id
+                            return (int) $record->id_pengguna === (int) $user->id
                                 && $record->status === 'pending';
                         }
 
-                        // Admin/Pemilik bebas melihat tombol edit
-                        return true;
+                        return $user->role === 'admin' && $record->status === 'pending';
                     })
                 ])->icon('heroicon-m-ellipsis-vertical')
             ])
