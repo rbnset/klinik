@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Pembayarans\Tables;
 
 use App\Models\Pembayaran;
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -23,7 +24,7 @@ class PembayaransTable
             ])
             ->defaultSort('tanggal_bayar', 'desc')
             ->striped()
-            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->recordActions([ViewAction::make(), Action::make('cetakPdf')->label('PDF')->icon('heroicon-o-printer')->url(fn (Pembayaran $record) => route('admin.cetak.pembayaran', ['pembayaran' => $record]))->openUrlInNewTab(), EditAction::make()])
             ->toolbarActions([]);
     }
 }

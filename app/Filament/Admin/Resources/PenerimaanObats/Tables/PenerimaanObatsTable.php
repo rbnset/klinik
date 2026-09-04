@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\PenerimaanObats\Tables;
 
 use App\Models\PenerimaanObat;
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -24,6 +25,7 @@ class PenerimaanObatsTable
             ->striped()
             ->recordActions([
                 ViewAction::make(),
+                Action::make('cetakPdf')->label('PDF')->icon('heroicon-o-printer')->url(fn (PenerimaanObat $record) => route('admin.cetak.penerimaan', ['penerimaan' => $record]))->openUrlInNewTab(),
                 EditAction::make()->visible(fn (PenerimaanObat $record) => ! $record->stok_diposting_at),
             ])
             ->toolbarActions([]);

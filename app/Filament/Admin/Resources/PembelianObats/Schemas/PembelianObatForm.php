@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use App\Models\Obat;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -48,11 +49,25 @@ class PembelianObatForm
                         ->schema([
                             Select::make('id_obat')
                                 ->relationship('obat', 'nama_obat')
-                                ->label('Obat')->searchable()->preload()->required()->columnSpan(2),
+                                ->label('Obat')->searchable()->preload()->required()->live()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    if (! $state) {
+                                        $set('harga_satuan', null);
+                                        return;
+                                    }
+
+                                    $hargaTerakhir = Obat::find($state)?->harga_beli_terakhir;
+                                    if ($hargaTerakhir !== null) {
+                                        $set('harga_satuan', $hargaTerakhir);
+                                    }
+                                })->columnSpan(2),
                             TextInput::make('jumlah_pesan')
                                 ->label('Qty Pesan')->numeric()->minValue(1)->required(),
                             TextInput::make('harga_satuan')
-                                ->label('Harga Supplier')->numeric()->minValue(0)->prefix('Rp')->required(),
+                                ->label('Harga Penawaran / Satuan')->numeric()->minValue(0)->prefix('Rp')->required()
+                                ->helperText(fn ($get) => ($obat = Obat::find($get('id_obat')))?->harga_beli_terakhir !== null
+                                    ? 'Harga beli terakhir: Rp ' . number_format((int) $obat->harga_beli_terakhir, 0, ',', '.')
+                                    : 'Belum ada riwayat harga beli.'),
                         ])->columns(4)
                         ->addActionLabel('Tambah Obat')
                         ->reorderable(false),

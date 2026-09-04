@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\PenyesuaianStoks\Tables;
 
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -31,6 +32,7 @@ class PenyesuaianStoksTable
             ->striped()
             ->recordActions([
                 ViewAction::make(),
+                Action::make('cetakPdf')->label('PDF')->icon('heroicon-o-printer')->url(fn ($record) => route('admin.cetak.penyesuaian', ['penyesuaian' => $record]))->openUrlInNewTab(),
                 EditAction::make()->visible(fn ($record) => ! $record->stok_diposting_at),
             ])
             ->toolbarActions([]);
