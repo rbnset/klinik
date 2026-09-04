@@ -11,7 +11,9 @@ class PenerimaanObatInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema->components([
+        return $schema
+        ->columns(1)
+        ->components([
             Section::make('Informasi Penerimaan')
                 ->description('Dokumen penerimaan barang dan faktur dari supplier.')
                 ->icon('heroicon-o-inbox-arrow-down')

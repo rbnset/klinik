@@ -13,35 +13,37 @@ class PenyesuaianStokForm
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema->components([
-            Section::make('Informasi Pemeriksaan')
-                ->description('Catat hasil pemeriksaan fisik apabila terdapat selisih dengan saldo stok sistem.')
-                ->icon('heroicon-o-clipboard-document-check')
-                ->schema([
-                    Select::make('id_obat')->relationship('obat', 'nama_obat')->label('Pilih Obat')->searchable()->preload()->required(),
-                    Select::make('id_pengguna')->relationship('pengguna', 'name')->label('Petugas Pemeriksa')->default(auth()->id())->required(),
-                    DatePicker::make('tanggal')->label('Tanggal Opname')->default(now())->required(),
-                ])->columns(3),
+        return $schema
+            ->columns(1)
+            ->components([
+                Section::make('Informasi Pemeriksaan')
+                    ->description('Catat hasil pemeriksaan fisik apabila terdapat selisih dengan saldo stok sistem.')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->schema([
+                        Select::make('id_obat')->relationship('obat', 'nama_obat')->label('Pilih Obat')->searchable()->preload()->required(),
+                        Select::make('id_pengguna')->relationship('pengguna', 'name')->label('Petugas Pemeriksa')->default(auth()->id())->required(),
+                        DatePicker::make('tanggal')->label('Tanggal Opname')->default(now())->required(),
+                    ])->columns(3),
 
-            Section::make('Tindakan Penyesuaian')
-                ->description('Tentukan arah dan alasan perubahan saldo stok berdasarkan temuan fisik.')
-                ->icon('heroicon-o-adjustments-horizontal')
-                ->schema([
-                    Select::make('jenis')
-                        ->label('Tindakan Sistem')
-                        ->options(['penambahan' => 'Tambah Stok Sistem (+)', 'pengurangan' => 'Kurangi Stok Sistem (-)'])
-                        ->required(),
-                    Select::make('alasan')
-                        ->label('Alasan Penyesuaian')
-                        ->options([
-                            'kadaluwarsa' => 'Barang Kadaluwarsa (Expired)',
-                            'rusak' => 'Barang Rusak / Pecah',
-                            'hilang' => 'Barang Hilang / Dicuri',
-                            'selisih_hitung' => 'Selisih Hitung Manusia',
-                        ])->required(),
-                    TextInput::make('jumlah')->label('Kuantitas Penyesuaian')->numeric()->suffix('Unit')->minValue(1)->required(),
-                    Textarea::make('keterangan')->label('Catatan Tambahan')->placeholder('Jelaskan detail temuan fisik...')->rows(3)->columnSpanFull(),
-                ])->columns(3),
-        ]);
+                Section::make('Tindakan Penyesuaian')
+                    ->description('Tentukan arah dan alasan perubahan saldo stok berdasarkan temuan fisik.')
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->schema([
+                        Select::make('jenis')
+                            ->label('Tindakan Sistem')
+                            ->options(['penambahan' => 'Tambah Stok Sistem (+)', 'pengurangan' => 'Kurangi Stok Sistem (-)'])
+                            ->required(),
+                        Select::make('alasan')
+                            ->label('Alasan Penyesuaian')
+                            ->options([
+                                'kadaluwarsa' => 'Barang Kadaluwarsa (Expired)',
+                                'rusak' => 'Barang Rusak / Pecah',
+                                'hilang' => 'Barang Hilang / Dicuri',
+                                'selisih_hitung' => 'Selisih Hitung Manusia',
+                            ])->required(),
+                        TextInput::make('jumlah')->label('Kuantitas Penyesuaian')->numeric()->suffix('Unit')->minValue(1)->required(),
+                        Textarea::make('keterangan')->label('Catatan Tambahan')->placeholder('Jelaskan detail temuan fisik...')->rows(3)->columnSpanFull(),
+                    ])->columns(3),
+            ]);
     }
 }

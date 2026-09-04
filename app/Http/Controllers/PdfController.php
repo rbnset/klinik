@@ -104,8 +104,8 @@ class PdfController extends Controller
     private function logoDataUri(): ?string
     {
         $paths = [
-            public_path('images/logo.svg'),
-            public_path('images/logo.png'),
+            public_path('images/logo.jpeg'),
+            public_path('images/logo.jpeg'),
         ];
 
         foreach ($paths as $path) {
