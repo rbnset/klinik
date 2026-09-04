@@ -18,10 +18,9 @@ class ObatsTable
                 TextColumn::make('kode_obat')
                     ->label('Kode SKU')
                     ->searchable()
-                    ->copyable() // UX Bagus: Pengguna bisa klik untuk copy kode
+                    ->copyable()
                     ->copyMessage('Kode obat disalin!')
-                    ->fontFamily('mono') // Font bergaya mesin ketik/barcode
-                    ->color('gray'),
+                    ->fontFamily('mono'),
 
                 TextColumn::make('nama_obat')
                     ->label('Nama Obat')
@@ -36,29 +35,28 @@ class ObatsTable
                     ->sortable(),
 
                 TextColumn::make('stok')
-                    ->label('Sisa Stok')
+                    ->label('Stok')
                     ->numeric()
                     ->sortable()
                     ->badge()
-                    // UX Bagus: Warna dinamis berdasarkan jumlah stok
-                    ->color(fn(string $state): string => match (true) {
-                        $state <= 10 => 'danger',   // Merah (Kritis)
-                        $state <= 30 => 'warning',  // Kuning (Menipis)
-                        default => 'success',       // Hijau (Aman)
+                    ->color(fn ($state): string => match (true) {
+                        (int) $state <= 0 => 'danger',
+                        (int) $state <= 10 => 'warning',
+                        (int) $state <= 30 => 'info',
+                        default => 'success',
                     }),
 
-                TextColumn::make('satuan')
-                    ->label('Satuan')
-                    ->searchable(),
+                TextColumn::make('satuan')->label('Satuan')->searchable(),
 
-                TextColumn::make('harga_beli')
-                    ->label('Harga Beli')
-                    ->money('IDR', locale: 'id') // Otomatis berformat Rp. 10.000,00
-                    ->sortable(),
+                TextColumn::make('harga_beli_terakhir')
+                    ->label('Harga Beli Terakhir')
+                    ->state(fn ($record) => $record->harga_beli_terakhir)
+                    ->money('IDR', locale: 'id')
+                    ->placeholder('—')
+                    ->sortable(false),
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
-            ->filters([])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

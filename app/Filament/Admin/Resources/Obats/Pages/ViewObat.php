@@ -16,9 +16,4 @@ class ViewObat extends ViewRecord
             EditAction::make(),
         ];
     }
-
-    public function getView(): string
-    {
-        return 'admin.obat.show';
-    }
 }

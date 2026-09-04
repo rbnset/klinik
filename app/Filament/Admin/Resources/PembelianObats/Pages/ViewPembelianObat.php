@@ -13,7 +13,8 @@ class ViewPembelianObat extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            EditAction::make()
+                ->visible(fn () => ! $this->record->penerimaan_obat()->exists() && ! $this->record->pembayaran()->exists()),
         ];
     }
 }

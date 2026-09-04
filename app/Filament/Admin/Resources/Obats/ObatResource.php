@@ -9,6 +9,8 @@ use App\Filament\Admin\Resources\Obats\Pages\ViewObat;
 use App\Filament\Admin\Resources\Obats\Schemas\ObatForm;
 use App\Filament\Admin\Resources\Obats\Schemas\ObatInfolist;
 use App\Filament\Admin\Resources\Obats\Tables\ObatsTable;
+use App\Filament\Admin\Resources\Obats\RelationManagers\RiwayatHargaBeliRelationManager;
+use App\Filament\Admin\Resources\Obats\RelationManagers\RiwayatStokRelationManager;
 use App\Models\Obat;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -49,7 +51,8 @@ class ObatResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RiwayatHargaBeliRelationManager::class,
+            RiwayatStokRelationManager::class,
         ];
     }
 

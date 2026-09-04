@@ -11,6 +11,7 @@ class EditObat extends EditRecord
 {
     protected static string $resource = ObatResource::class;
 
+
     protected function getHeaderActions(): array
     {
         return [

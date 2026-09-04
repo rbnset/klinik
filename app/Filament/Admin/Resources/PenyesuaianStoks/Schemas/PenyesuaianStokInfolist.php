@@ -10,27 +10,47 @@ class PenyesuaianStokInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Section::make('Rincian Penyesuaian Fisik')
-                    ->schema([
-                        TextEntry::make('tanggal')->label('Tanggal Opname')->dateTime('d M Y'),
-                        TextEntry::make('obat.nama_obat')->label('Nama Obat')->weight('bold')->size('lg'),
-                        TextEntry::make('pengguna.name')->label('Petugas Eksekutor'),
+        return $schema->components([
+            Section::make('Informasi Penyesuaian')
+                ->description('Catatan penyesuaian stok berdasarkan hasil pemeriksaan fisik.')
+                ->icon('heroicon-o-adjustments-horizontal')
+                ->schema([
+                    TextEntry::make('id')
+                        ->label('Nomor Penyesuaian')
+                        ->formatStateUsing(fn ($state) => 'ADJ-' . str_pad((string) $state, 5, '0', STR_PAD_LEFT))
+                        ->fontFamily('mono')
+                        ->weight('bold'),
+                    TextEntry::make('obat.nama_obat')->label('Nama Obat')->weight('bold'),
+                    TextEntry::make('obat.satuan')->label('Satuan')->placeholder('-'),
+                    TextEntry::make('pengguna.name')->label('Petugas Pemeriksa')->placeholder('-'),
+                    TextEntry::make('tanggal')->label('Tanggal Opname')->date('d M Y'),
+                    TextEntry::make('jenis')
+                        ->label('Tindakan')
+                        ->badge()
+                        ->formatStateUsing(fn ($state) => match ($state) {
+                            'penambahan' => 'Penambahan',
+                            'pengurangan' => 'Pengurangan',
+                            default => $state,
+                        })
+                        ->color(fn (string $state): string => match ($state) {
+                            'penambahan' => 'success',
+                            'pengurangan' => 'danger',
+                            default => 'gray',
+                        }),
+                    TextEntry::make('alasan')
+                        ->label('Alasan')
+                        ->formatStateUsing(fn ($state) => ucfirst(str_replace('_', ' ', (string) $state))),
+                    TextEntry::make('jumlah')->label('Kuantitas')->numeric()->weight('bold'),
+                    TextEntry::make('keterangan')->label('Catatan')->placeholder('-')->columnSpanFull(),
+                ])->columns(2),
 
-                        TextEntry::make('jenis')
-                            ->label('Tindakan')
-                            ->badge()
-                            ->color(fn(string $state): string => match ($state) {
-                                'penambahan' => 'success',
-                                'pengurangan' => 'danger',
-                            }),
-
-                        TextEntry::make('alasan')->label('Alasan')->formatStateUsing(fn(string $state): string => ucfirst(str_replace('_', ' ', $state))),
-                        TextEntry::make('jumlah')->label('Kuantitas (Unit)')->weight('bold'),
-
-                        TextEntry::make('keterangan')->label('Catatan')->columnSpanFull(),
-                    ])->columns(3)
-            ]);
+            Section::make('Informasi Sistem')
+                ->icon('heroicon-o-clock')
+                ->collapsed()
+                ->schema([
+                    TextEntry::make('created_at')->label('Dicatat')->dateTime('d M Y, H:i')->placeholder('-'),
+                    TextEntry::make('updated_at')->label('Terakhir Diubah')->dateTime('d M Y, H:i')->placeholder('-'),
+                ])->columns(2),
+        ]);
     }
 }

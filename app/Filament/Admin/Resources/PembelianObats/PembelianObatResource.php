@@ -14,6 +14,8 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use App\Filament\Admin\Resources\PembelianObats\RelationManagers\PenerimaanObatRelationManager;
+use App\Filament\Admin\Resources\PembelianObats\RelationManagers\PembayaranRelationManager;
 
 class PembelianObatResource extends Resource
 {
@@ -42,7 +44,7 @@ class PembelianObatResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [PenerimaanObatRelationManager::class, PembayaranRelationManager::class];
     }
 
     public static function getPages(): array

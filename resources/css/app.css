@@ -7,3 +7,80 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* =========================================================
+   KATALOG OBAT — CRUD & DETAIL CONSISTENCY
+   Light/dark aware via Filament/Tailwind dark classes.
+   ========================================================= */
+.ob-crud-shell,.ob-detail-shell{max-width:1400px;margin:0 auto;width:100%}
+.ob-crud-head,.ob-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}
+.ob-crud-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgb(107 114 128);margin-bottom:.35rem}
+.ob-crud-title{font-size:1.6rem;line-height:1.2;font-weight:750;letter-spacing:-.02em;color:rgb(17 24 39);margin:0}
+.dark .ob-crud-title{color:rgb(243 244 246)}
+.ob-crud-subtitle{margin:.45rem 0 0;max-width:760px;font-size:.88rem;line-height:1.5;color:rgb(107 114 128)}
+.dark .ob-crud-subtitle{color:rgb(156 163 175)}
+.ob-crud-back,.ob-secondary-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgb(229 231 235);background:rgb(255 255 255);color:rgb(55 65 81);border-radius:.7rem;padding:.55rem .85rem;font-size:.82rem;font-weight:600;text-decoration:none;white-space:nowrap}
+.dark .ob-crud-back,.dark .ob-secondary-btn{background:rgb(31 41 55);border-color:rgb(55 65 81);color:rgb(229 231 235)}
+.ob-crud-shell .fi-section,.ob-info-panel,.ob-summary-card,.ob-price-note{border-radius:1rem}
+.ob-detail-title-wrap{display:flex;gap:.85rem;align-items:center}
+.ob-detail-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:.85rem;background:rgb(243 244 246);font-size:1.3rem}
+.dark .ob-detail-icon{background:rgb(31 41 55)}
+.ob-detail-meta{display:flex;gap:.45rem;margin-top:.4rem;font-size:.78rem;color:rgb(107 114 128)}
+.dark .ob-detail-meta{color:rgb(156 163 175)}
+.ob-detail-actions{display:flex;gap:.5rem}
+.ob-primary-btn{display:inline-flex;align-items:center;border-radius:.7rem;padding:.58rem .9rem;background:rgb(37 99 235);color:white;font-size:.82rem;font-weight:650;text-decoration:none}
+.ob-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;margin-bottom:1rem}
+.ob-summary-card{padding:1rem;background:rgb(255 255 255);border:1px solid rgb(229 231 235);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.dark .ob-summary-card{background:rgb(17 24 39);border-color:rgb(55 65 81)}
+.ob-summary-card span,.ob-info-grid span{display:block;font-size:.72rem;font-weight:600;color:rgb(107 114 128);margin-bottom:.35rem}
+.dark .ob-summary-card span,.dark .ob-info-grid span{color:rgb(156 163 175)}
+.ob-summary-card strong{display:block;font-size:1.18rem;line-height:1.25;color:rgb(17 24 39);font-weight:750}
+.dark .ob-summary-card strong{color:rgb(243 244 246)}
+.ob-summary-card small{display:block;margin-top:.25rem;color:rgb(107 114 128);font-size:.7rem}
+.dark .ob-summary-card small{color:rgb(156 163 175)}
+.ob-summary-text{font-size:1rem!important}
+.ob-info-panel{padding:1.15rem;background:rgb(255 255 255);border:1px solid rgb(229 231 235)}
+.dark .ob-info-panel{background:rgb(17 24 39);border-color:rgb(55 65 81)}
+.ob-panel-head{padding-bottom:.85rem;border-bottom:1px solid rgb(229 231 235);margin-bottom:.9rem}
+.dark .ob-panel-head{border-color:rgb(55 65 81)}
+.ob-panel-head h2{margin:0;font-size:.95rem;font-weight:700;color:rgb(17 24 39)}
+.dark .ob-panel-head h2{color:rgb(243 244 246)}
+.ob-panel-head p{margin:.25rem 0 0;font-size:.75rem;color:rgb(107 114 128)}
+.ob-info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+.ob-info-grid strong{font-size:.86rem;color:rgb(31 41 55)}
+.dark .ob-info-grid strong{color:rgb(229 231 235)}
+.ob-price-note{display:flex;gap:.75rem;margin-top:1rem;padding:1rem;border:1px solid rgb(191 219 254);background:rgb(239 246 255)}
+.dark .ob-price-note{border-color:rgb(30 64 175);background:rgb(23 37 84)}
+.ob-price-note-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:.65rem;background:rgb(219 234 254);color:rgb(30 64 175);font-weight:700;flex:none}
+.dark .ob-price-note-icon{background:rgb(30 58 138);color:rgb(191 219 254)}
+.ob-price-note strong{font-size:.82rem;color:rgb(30 64 175)}
+.dark .ob-price-note strong{color:rgb(191 219 254)}
+.ob-price-note p{margin:.2rem 0 0;font-size:.75rem;line-height:1.55;color:rgb(51 65 85)}
+.dark .ob-price-note p{color:rgb(191 219 254)}
+@media(max-width:900px){.ob-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ob-info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ob-crud-head,.ob-detail-head{flex-direction:column}.ob-detail-actions{width:100%}}
+@media(max-width:600px){.ob-summary-grid,.ob-info-grid{grid-template-columns:1fr}.ob-detail-actions a{flex:1}}
+
+/* Procurement / Pengadaan Barang — follows the Katalog Obat visual language. */
+.procurement-crud-shell,.procurement-detail-shell{max-width:1400px;margin:0 auto;width:100%}.procurement-crud-head,.procurement-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}.procurement-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgb(107 114 128);margin-bottom:.35rem}.procurement-title{font-size:1.6rem;line-height:1.2;font-weight:750;letter-spacing:-.02em;color:rgb(17 24 39);margin:0}.dark .procurement-title{color:rgb(243 244 246)}.procurement-subtitle{margin:.45rem 0 0;max-width:780px;font-size:.88rem;line-height:1.5;color:rgb(107 114 128)}.dark .procurement-subtitle{color:rgb(156 163 175)}.procurement-back,.procurement-secondary{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgb(229 231 235);background:rgb(255 255 255);color:rgb(55 65 81);border-radius:.7rem;padding:.55rem .85rem;font-size:.82rem;font-weight:600;text-decoration:none;white-space:nowrap}.dark .procurement-back,.dark .procurement-secondary{background:rgb(31 41 55);border-color:rgb(55 65 81);color:rgb(229 231 235)}.procurement-crud-shell .fi-section,.procurement-summary-card,.procurement-note{border-radius:1rem}.procurement-title-wrap{display:flex;gap:.85rem;align-items:center}.procurement-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:.85rem;background:rgb(243 244 246);font-size:1.3rem}.dark .procurement-icon{background:rgb(31 41 55)}.procurement-meta{display:flex;gap:.45rem;margin-top:.4rem;font-size:.78rem;color:rgb(107 114 128)}.dark .procurement-meta{color:rgb(156 163 175)}.procurement-actions{display:flex;gap:.5rem}.procurement-primary{display:inline-flex;align-items:center;justify-content:center;border-radius:.7rem;padding:.55rem .85rem;font-size:.82rem;font-weight:700;text-decoration:none;background:rgb(17 24 39);color:white}.dark .procurement-primary{background:rgb(243 244 246);color:rgb(17 24 39)}.procurement-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;margin-bottom:1rem}.procurement-summary-card{padding:1rem 1.05rem;background:white;border:1px solid rgb(229 231 235)}.dark .procurement-summary-card{background:rgb(17 24 39);border-color:rgb(55 65 81)}.procurement-summary-card span,.procurement-summary-card small{display:block;color:rgb(107 114 128);font-size:.75rem}.dark .procurement-summary-card span,.dark .procurement-summary-card small{color:rgb(156 163 175)}.procurement-summary-card strong{display:block;margin:.3rem 0;font-size:1.2rem;color:rgb(17 24 39)}.dark .procurement-summary-card strong{color:rgb(243 244 246)}.procurement-note{padding:1rem 1.1rem;margin-bottom:1rem;border:1px solid rgb(229 231 235);background:rgb(249 250 251);color:rgb(55 65 81)}.procurement-note p{margin:.3rem 0 0;font-size:.82rem;line-height:1.55}.dark .procurement-note{background:rgb(31 41 55);border-color:rgb(55 65 81);color:rgb(229 231 235)}@media(max-width:1000px){.procurement-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.procurement-crud-head,.procurement-detail-head{flex-direction:column}.procurement-actions{width:100%}}@media(max-width:600px){.procurement-summary-grid{grid-template-columns:1fr}.procurement-actions a{flex:1}}
+
+/* =========================================================
+   DETAIL RELATION MANAGERS — native Filament tabs inside
+   custom record pages. Keeps the visual language consistent.
+   ========================================================= */
+.ob-relation-wrap,.procurement-relations{margin-top:1.25rem}
+.ob-relation-heading,.procurement-relation-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.75rem;padding:1rem 1.05rem;border:1px solid rgb(229 231 235);border-radius:1rem;background:rgb(249 250 251)}
+.dark .ob-relation-heading,.dark .procurement-relation-heading{border-color:rgb(55 65 81);background:rgb(31 41 55)}
+.ob-relation-heading h2,.procurement-relation-heading h2{margin:.15rem 0 0;font-size:1rem;font-weight:750;color:rgb(17 24 39)}
+.dark .ob-relation-heading h2,.dark .procurement-relation-heading h2{color:rgb(243 244 246)}
+.ob-relation-heading p,.procurement-relation-heading p{margin:.3rem 0 0;font-size:.76rem;line-height:1.5;color:rgb(107 114 128)}
+.dark .ob-relation-heading p,.dark .procurement-relation-heading p{color:rgb(156 163 175)}
+.ob-relation-wrap .fi-tabs,.procurement-relations .fi-tabs{border-radius:1rem}
+.ob-relation-wrap .fi-ta-ctn,.procurement-relations .fi-ta-ctn{border-radius:1rem;overflow:hidden}
+
+/* Custom record pages: keep Filament's own content width predictable. */
+.fi-resource-record-page .fi-main-ctn,.fi-resource-record-page .fi-main{max-width:none}
+
+/* Improve the custom CRUD header on narrower desktop widths. */
+@media(max-width:1100px){
+    .ob-crud-shell,.ob-detail-shell,.procurement-crud-shell,.procurement-detail-shell{max-width:100%}
+}

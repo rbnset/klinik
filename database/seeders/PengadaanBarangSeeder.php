@@ -1,7 +1,5 @@
 <?php
-
 namespace Database\Seeders;
-
 use App\Models\DetailPembelianObat;
 use App\Models\DetailPenerimaanObat;
 use App\Models\Obat;
@@ -9,77 +7,25 @@ use App\Models\Pembayaran;
 use App\Models\PembelianObat;
 use App\Models\PenerimaanObat;
 use App\Models\RiwayatStok;
-use Illuminate\Database\Seeder;
+use App\Services\StokObatService;
 use Carbon\Carbon;
-
+use Illuminate\Database\Seeder;
 class PengadaanBarangSeeder extends Seeder
 {
-    public function run(): void
-    {
-        // Simulasi 3 Transaksi Pengadaan (Beli Barang)
-        for ($i = 1; $i <= 3; $i++) {
-            $tgl = Carbon::now()->subDays(30 - ($i * 5)); // Tanggal mundur agar grafik terisi
-
-            // 1. Buat Dokumen PO
-            $po = PembelianObat::create([
-                'id_supplier' => rand(1, 5),
-                'id_pengguna' => 2, // Karyawan Gudang
-                'tanggal_pesan' => $tgl,
-                'status' => 'selesai',
-            ]);
-
-            $totalBayar = 0;
-
-            // 2. Rincian PO (Setiap PO beli 2 macam obat)
-            for ($j = 1; $j <= 2; $j++) {
-                $idObat = rand(1, 10);
-                $obat = Obat::find($idObat);
-                $qtyBeli = rand(50, 100);
-
-                $detailPO = DetailPembelianObat::create([
-                    'id_pembelian_obat' => $po->id,
-                    'id_obat' => $idObat,
-                    'jumlah_pesan' => $qtyBeli,
-                    'harga_satuan' => $obat->harga_beli,
-                ]);
-
-                $totalBayar += ($qtyBeli * $obat->harga_beli);
-
-                // 3. Catat Penerimaan (Faktur)
-                $penerimaan = PenerimaanObat::firstOrCreate(
-                    ['id_pembelian_obat' => $po->id],
-                    ['nomor_faktur' => 'INV-SUP-' . $po->id . rand(100, 999), 'tanggal_terima' => $tgl->copy()->addDays(2)]
-                );
-
-                DetailPenerimaanObat::create([
-                    'id_penerimaan_obat' => $penerimaan->id,
-                    'id_detail_pembelian' => $detailPO->id,
-                    'jumlah_diterima' => $qtyBeli,
-                ]);
-
-                // 4. Catat Riwayat Stok (BARANG MASUK) & Update Stok Master
-                $stokAwal = $obat->stok;
-                $stokAkhir = $stokAwal + $qtyBeli;
-
-                RiwayatStok::create([
-                    'id_obat' => $idObat,
-                    'jenis_transaksi' => 'masuk',
-                    'jumlah' => $qtyBeli,
-                    'stok_sebelum' => $stokAwal,
-                    'stok_sesudah' => $stokAkhir,
-                    'referensi_transaksi' => 'PO-' . $po->id . ' / ' . $penerimaan->nomor_faktur,
-                ]);
-
-                $obat->update(['stok' => $stokAkhir]); // Pembaruan Stok Asli
-            }
-
-            // 5. Catat Pelunasan Tagihan
-            Pembayaran::create([
-                'id_pembelian_obat' => $po->id,
-                'tanggal_bayar' => $tgl->copy()->addDays(3),
-                'metode_pembayaran' => 'transfer',
-                'total_bayar' => $totalBayar,
-            ]);
-        }
-    }
+ public function run(): void {
+  $purchases=[
+   [30,1,[[1,80,3500,80],[2,60,6000,60]],'lunas'],
+   [20,2,[[1,100,3800,70],[4,50,15000,50]],'sebagian'],
+   [10,3,[[1,120,3650,120],[2,70,6200,50],[6,60,5200,60]],'belum'],
+  ];
+  foreach($purchases as [$daysAgo,$supplierId,$items,$payState]){
+   $tgl=Carbon::now()->subDays($daysAgo); $po=PembelianObat::create(['id_supplier'=>$supplierId,'id_pengguna'=>2,'tanggal_pesan'=>$tgl,'status'=>'selesai']);
+   $details=[]; foreach($items as [$obatId,$qty,$harga,$terima]) $details[] = DetailPembelianObat::create(['id_pembelian_obat'=>$po->id,'id_obat'=>$obatId,'jumlah_pesan'=>$qty,'harga_satuan'=>$harga]);
+   $penerimaan=PenerimaanObat::create(['id_pembelian_obat'=>$po->id,'nomor_faktur'=>'INV-SUP-'.str_pad((string)$po->id,4,'0',STR_PAD_LEFT),'tanggal_terima'=>$tgl->copy()->addDays(2)]);
+   foreach($details as $i=>$detail){ $qty=$items[$i][3]; if($qty<=0) continue; DetailPenerimaanObat::create(['id_penerimaan_obat'=>$penerimaan->id,'id_detail_pembelian'=>$detail->id,'jumlah_diterima'=>$qty]); }
+   app(StokObatService::class)->postingPenerimaan($penerimaan);
+   $total=(int)$po->total_pesanan; $bayar=$payState==='lunas'?$total:($payState==='sebagian'?intdiv($total,2):0);
+   if($bayar>0) Pembayaran::create(['id_pembelian_obat'=>$po->id,'tanggal_bayar'=>$tgl->copy()->addDays(3),'metode_pembayaran'=>'transfer','total_bayar'=>$bayar]);
+  }
+ }
 }
