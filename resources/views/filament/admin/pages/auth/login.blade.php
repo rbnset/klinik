@@ -304,6 +304,102 @@
         .dark .pbps-login-back { color: #a3aab7; }
         .pbps-login-back:hover { color: #df2228; }
 
+        .pbps-native-login-form { margin: 0; }
+
+        .pbps-field { margin-bottom: 17px; }
+
+        .pbps-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #111827;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .dark .pbps-field label { color: #f4f5f7; }
+
+        .pbps-field label span { color: #df2228; }
+
+        .pbps-field input[type="email"],
+        .pbps-field input[type="password"] {
+            width: 100%;
+            height: 44px;
+            box-sizing: border-box;
+            border: 1px solid #d9dde5;
+            border-radius: 11px;
+            outline: none;
+            background: #fff;
+            color: #111827;
+            padding: 0 13px;
+            font: inherit;
+            font-size: 13px;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+
+        .dark .pbps-field input[type="email"],
+        .dark .pbps-field input[type="password"] {
+            border-color: #353a44;
+            background: #111318;
+            color: #f4f5f7;
+        }
+
+        .pbps-field input:focus {
+            border-color: #df2228;
+            box-shadow: 0 0 0 3px rgba(223, 34, 40, .10);
+        }
+
+        .pbps-field input::placeholder { color: #98a2b3; }
+
+        .pbps-password-wrap { position: relative; }
+        .pbps-password-wrap input { padding-right: 46px !important; }
+
+        .pbps-password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 7px;
+            width: 34px;
+            height: 34px;
+            transform: translateY(-50%);
+            display: grid;
+            place-items: center;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #667085;
+            cursor: pointer;
+        }
+
+        .pbps-password-toggle:hover { background: #f2f4f7; color: #111827; }
+        .dark .pbps-password-toggle:hover { background: #242831; color: #f4f5f7; }
+        .pbps-password-toggle svg { width: 18px; height: 18px; }
+
+        .pbps-field-error {
+            margin-top: 6px;
+            color: #dc2626;
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .pbps-remember {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1px;
+            color: #475467;
+            font-size: 11px;
+            font-weight: 650;
+            cursor: pointer;
+        }
+
+        .dark .pbps-remember { color: #b2b8c3; }
+
+        .pbps-remember input {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            accent-color: #df2228;
+        }
+
         @media (max-width: 900px) {
             .pbps-login-shell { padding: 36px 22px; }
             .pbps-login-wrap { grid-template-columns: 1fr; gap: 34px; max-width: 620px; }
@@ -356,25 +452,60 @@
                     <p>Gunakan email dan password yang telah terdaftar.</p>
                 </div>
 
-                {{ \Filament\Support\Facades\FilamentView::renderHook('panels::auth.login.form.before') }}
+                <form method="POST" action="{{ route('admin.login.submit') }}" class="pbps-native-login-form">
+                    @csrf
 
-                <form wire:submit="authenticate">
-                    {{ $this->form }}
+                    <div class="pbps-field">
+                        <label for="login-email">Alamat email <span aria-hidden="true">*</span></label>
+                        <input
+                            id="login-email"
+                            name="email"
+                            type="email"
+                            value="{{ old('email') }}"
+                            autocomplete="email"
+                            required
+                            autofocus
+                            placeholder="nama@email.com"
+                        >
+                        @error('email')
+                            <div class="pbps-field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="pbps-field">
+                        <label for="login-password">Kata sandi <span aria-hidden="true">*</span></label>
+                        <div class="pbps-password-wrap">
+                            <input
+                                id="login-password"
+                                name="password"
+                                type="password"
+                                autocomplete="current-password"
+                                required
+                                placeholder="Masukkan kata sandi"
+                            >
+                            <button type="button" class="pbps-password-toggle" onclick="toggleLoginPassword()" aria-label="Tampilkan kata sandi">
+                                <svg id="pbps-eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/>
+                                    <circle cx="12" cy="12" r="2.5"/>
+                                </svg>
+                            </button>
+                        </div>
+                        @error('password')
+                            <div class="pbps-field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <label class="pbps-remember">
+                        <input type="checkbox" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
+                        <span>Ingat saya</span>
+                    </label>
 
                     <div class="pbps-login-submit">
-                        <button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            wire:target="authenticate"
-                            class="pbps-login-submit-button"
-                        >
-                            <span wire:loading.remove wire:target="authenticate">Masuk ke Sistem</span>
-                            <span wire:loading wire:target="authenticate">Memproses...</span>
+                        <button type="submit" class="pbps-login-submit-button">
+                            Masuk ke Sistem
                         </button>
                     </div>
                 </form>
-
-                {{ \Filament\Support\Facades\FilamentView::renderHook('panels::auth.login.form.after') }}
 
                 <div class="pbps-login-footer">
                     Supplier belum memiliki akun?

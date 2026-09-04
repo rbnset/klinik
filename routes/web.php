@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminLoginController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\SupplierRegistrationController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome')->name('landing');
 Route::get('/daftar-supplier', [SupplierRegistrationController::class, 'create'])->name('supplier.register');
 Route::post('/daftar-supplier', [SupplierRegistrationController::class, 'store'])->name('supplier.register.store');
+
+// Login panel menggunakan HTTP POST biasa agar autentikasi tetap berjalan meskipun Livewire tidak mengirim request.
+Route::post('/admin/login', [AdminLoginController::class, 'authenticate'])->name('admin.login.submit');
 
 Route::middleware(['web', 'auth'])->prefix('admin/cetak')->name('admin.cetak.')->group(function () {
     Route::get('/pembelian/{pembelian}', [PdfController::class, 'pembelian'])->name('pembelian');
