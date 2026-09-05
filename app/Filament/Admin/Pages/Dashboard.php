@@ -18,11 +18,14 @@ class Dashboard extends BaseDashboard
 
     public function getHeading(): string
     {
-        return match (auth()->user()?->role) { 'supplier' => 'Portal Supplier', 'karyawan' => 'Dashboard Gudang', 'pemilik' => 'Dashboard Pemilik', default => 'Dashboard', };
+        return match (auth()->user()?->role) { 'admin' => 'Dashboard Administrator', 'supplier' => 'Portal Supplier', 'karyawan' => 'Dashboard Gudang', 'pemilik' => 'Dashboard Pemilik', default => 'Dashboard', };
     }
 
     public function getSubheading(): ?string
     {
+        if (auth()->user()?->role === 'admin') {
+            return 'Pusat kontrol akses, verifikasi supplier, dan pengawasan proses sistem.';
+        }
         if (auth()->user()?->role === 'supplier') {
             return 'Kelola pesanan, konfirmasi harga, dan pantau proses pengadaan Anda.';
         }
@@ -46,12 +49,7 @@ class Dashboard extends BaseDashboard
         $role = auth()->user()?->role;
 
         return match ($role) {
-            'admin' => [
-                \App\Filament\Admin\Widgets\StatsOverview::class,
-                \App\Filament\Admin\Widgets\QuickActionsWidget::class,
-                \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
-                \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
-            ],
+            'admin' => [\App\Filament\Admin\Widgets\AdminDashboardWidget::class],
             'karyawan' => [\App\Filament\Admin\Widgets\WarehouseDashboardWidget::class],
             'pemilik' => [
                 \App\Filament\Admin\Widgets\PemilikDashboardWidget::class,
