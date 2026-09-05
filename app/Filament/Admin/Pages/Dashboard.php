@@ -2,10 +2,9 @@
 
 namespace App\Filament\Admin\Pages;
 
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Schema;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Schemas\Schema;
 
 class Dashboard extends BaseDashboard
 {
@@ -18,37 +17,37 @@ class Dashboard extends BaseDashboard
 
     public function getHeading(): string
     {
-        return match (auth()->user()?->role) { 'supplier' => 'Portal Supplier', 'karyawan' => 'Dashboard Gudang', default => 'Dashboard', };
+        return match (auth()->user()?->role) {
+            'admin' => 'Dashboard Admin',
+            'supplier' => 'Portal Supplier',
+            'karyawan' => 'Dashboard Gudang',
+            'bidan' => 'Portal Bidan',
+            'pemilik' => 'Dashboard Pemilik',
+            default => 'Dashboard',
+        };
     }
 
     public function getSubheading(): ?string
     {
-        if (auth()->user()?->role === 'supplier') {
-            return 'Kelola pesanan, konfirmasi harga, dan pantau proses pengadaan Anda.';
-        }
-        if (auth()->user()?->role === 'karyawan') {
-            return 'Pusat kendali operasional gudang dan pengadaan obat.';
-        }
-
-        return null;
+        return match (auth()->user()?->role) {
+            'admin' => 'Pusat kendali administrasi, verifikasi supplier, akses pengguna, dan pengawasan operasional klinik.',
+            'supplier' => 'Kelola pesanan, konfirmasi harga, dan pantau proses pengadaan Anda.',
+            'karyawan' => 'Pusat kendali operasional gudang dan pengadaan obat.',
+            'bidan' => 'Kelola permintaan obat internal dan pantau proses pemenuhannya.',
+            'pemilik' => 'Ringkasan kondisi persediaan, pengadaan, dan aktivitas operasional klinik.',
+            default => null,
+        };
     }
 
     public function getColumns(): int | array
     {
-        return in_array(auth()->user()?->role, ['supplier', 'karyawan'], true) ? 1 : 2;
+        return in_array(auth()->user()?->role, ['admin', 'supplier', 'karyawan', 'bidan'], true) ? 1 : 2;
     }
 
     public function getWidgets(): array
     {
-        $role = auth()->user()?->role;
-
-        return match ($role) {
-            'admin' => [
-                \App\Filament\Admin\Widgets\StatsOverview::class,
-                \App\Filament\Admin\Widgets\QuickActionsWidget::class,
-                \App\Filament\Admin\Widgets\PeringatanStokWidget::class,
-                \App\Filament\Admin\Widgets\TopPermintaanWidget::class,
-            ],
+        return match (auth()->user()?->role) {
+            'admin' => [\App\Filament\Admin\Widgets\AdminDashboardWidget::class],
             'karyawan' => [\App\Filament\Admin\Widgets\WarehouseDashboardWidget::class],
             'pemilik' => [
                 \App\Filament\Admin\Widgets\StatsOverview::class,
@@ -61,22 +60,13 @@ class Dashboard extends BaseDashboard
         };
     }
 
+    /**
+     * Dashboard tidak lagi menggunakan filter bulan/tahun.
+     * Setiap dashboard menampilkan kondisi operasional yang relevan
+     * secara langsung agar admin/petugas dapat fokus pada pekerjaan.
+     */
     public function filtersForm(Schema $schema): Schema
     {
-        if (in_array(auth()->user()?->role, ['supplier', 'karyawan', 'bidan'], true)) {
-            return $schema->components([]);
-        }
-
-        return $schema->components([
-            Select::make('bulan')->label('Filter Bulan')->options([
-                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
-                '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
-                '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
-            ])->default(now()->format('m')),
-            Select::make('tahun')->label('Filter Tahun')->options(array_combine(
-                range(now()->subYears(2)->format('Y'), now()->format('Y')),
-                range(now()->subYears(2)->format('Y'), now()->format('Y')),
-            ))->default(now()->format('Y')),
-        ])->columns(2);
+        return $schema->components([]);
     }
 }
